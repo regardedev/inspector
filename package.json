@@ -1,0 +1,38 @@
+{
+  "name": "regarde-inspector",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Alternative inspector to the default Jazz-tools inspector",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/regardedev/inspector"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "e2e"
+  ],
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm build:packages"
+  },
+  "author": "cleminso",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/react-router-devtools": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
+    "jazz-tools": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "swr": "catalog:"
+  },
+  "devDependencies": {
+    "@tanstack/router-plugin": "catalog:",
+    "@vitejs/plugin-react-swc": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-top-level-await": "catalog:",
+    "vite-plugin-wasm": "catalog:"
+  }
+}
