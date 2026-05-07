@@ -72,11 +72,11 @@ UI polish is not the priority.
 - Navigation should resolve the final canonical workspace route before navigating
 - Redirect routes exist only as fallback entry points
 - Workspace switching should not require returning to `/conn`
-- Deep-linking from `pnpm dev` output is optional and deferred for the MVP
+- Deep-linking from `pnpm dev` output is in scope for the local `/conn/new` flow
+- Emitted terminal link should match upstream param parity and use `/conn/new#serverUrl=...&appId=...&adminSecret=...`
 
 ## Deferred for Later
 
-- `pnpm dev` generated deep-link support
 - server-backed branch discovery
 - schema metadata driven schema selection
 - edit connection route design

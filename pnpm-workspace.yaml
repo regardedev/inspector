@@ -1,5 +1,5 @@
 packages:
-  - apps/web-inspector
+  - apps/*
   - packages/*
 
 catalog:

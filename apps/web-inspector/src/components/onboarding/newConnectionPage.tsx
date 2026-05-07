@@ -42,6 +42,10 @@ export function NewConnectionPage(): React.ReactElement {
                     <dt className="text-zinc-500">Environment</dt>
                     <dd>{prefill.env || "(empty)"}</dd>
                   </div>
+                  <div>
+                    <dt className="text-zinc-500">Branch</dt>
+                    <dd>{prefill.branch || "(empty)"}</dd>
+                  </div>
                 </dl>
               ) : (
                 <p className="text-zinc-500">No connection prefill is available.</p>

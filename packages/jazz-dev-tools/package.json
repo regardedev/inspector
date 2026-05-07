@@ -1,0 +1,31 @@
+{
+  "name": "@regarde/jazz-dev-tools",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./dev/*": {
+      "types": "./dist/dev/*.d.ts",
+      "default": "./dist/dev/*.mjs"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "rm -rf dist && tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jazz-tools": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsup": "^8.5.1",
+    "typescript": "catalog:"
+  }
+}

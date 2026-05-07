@@ -1,10 +1,14 @@
 import {
+  DEFAULT_BRANCH_NAME,
   DEFAULT_SERVER_URL,
+  normalizeBranchName,
   normalizeEnvName,
   type ConnectionDraft,
 } from "./connections";
 
-export interface PrefillConfig extends ConnectionDraft {}
+export interface PrefillConfig extends ConnectionDraft {
+  branch: string;
+}
 
 export function readPrefillConfig(locationOverride?: Location): PrefillConfig | null {
   const location = locationOverride ?? globalThis.location;
@@ -16,8 +20,7 @@ export function readPrefillConfig(locationOverride?: Location): PrefillConfig | 
   const hashValue = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
   const hashParams = new URLSearchParams(hashValue);
   const mergedParams = mergeSearchParams(searchParams, hashParams);
-  // TODO: If we later support deep-linking route context, model it separately from connection draft prefill.
-  const hasKnownPrefillParam = ["name", "serverUrl", "appId", "adminSecret", "env"].some(
+  const hasKnownPrefillParam = ["name", "serverUrl", "appId", "adminSecret", "env", "branch"].some(
     (key) => mergedParams.has(key),
   );
 
@@ -31,6 +34,7 @@ export function readPrefillConfig(locationOverride?: Location): PrefillConfig | 
     appId: (mergedParams.get("appId") ?? "").trim(),
     adminSecret: (mergedParams.get("adminSecret") ?? "").trim(),
     env: normalizeEnvName(mergedParams.get("env")),
+    branch: normalizeBranchName(mergedParams.get("branch") ?? DEFAULT_BRANCH_NAME),
   };
 }
 

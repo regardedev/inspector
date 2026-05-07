@@ -9,6 +9,7 @@
   - [Alternative Approaches Considered](#alternative-approaches-considered)
 - [Key Questions Explored](#key-questions-explored)
 - [UI Pattern](#ui-pattern)
+- [Inspector Link Prefill](#inspector-link-prefill)
 - [Extension Mode](#extension-mode)
 - [Example URLs](#example-urls)
 
@@ -144,6 +145,23 @@ LIVE QUERY
 ```
 
 Clicking a table navigates to `/conn/:id/:branch/:schema/tables/:tableName`
+
+## Inspector Link Prefill
+
+Verified upstream behavior:
+
+- `packages/jazz-tools/src/dev/managed-runtime.ts` emits runtime facts such as server URL, app id, and schema publication state
+- `packages/jazz-tools/src/dev/vite.ts` emits the `Open the inspector:` log line
+- `packages/jazz-tools/src/dev/inspector-link.ts` builds the inspector URL with hash params for:
+  - `serverUrl`
+  - `appId`
+  - `adminSecret`
+
+For this repo, the local equivalent should target:
+
+`http://regarde.inspector.localhost:1355/conn/new#serverUrl=<encoded>&appId=<encoded>&adminSecret=<encoded>`
+
+This preserves strict upstream emitted-link parity while routing into the local add-connection flow.
 
 ## Extension Mode
 
