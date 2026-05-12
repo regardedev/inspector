@@ -6,4 +6,5 @@ export const appRoutes = {
   schema: "/conn/$connectionId/$branch/$schemaHash",
   tables: "/conn/$connectionId/$branch/$schemaHash/tables",
   table: "/conn/$connectionId/$branch/$schemaHash/tables/$tableName",
+  editTable: "/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit",
 } as const;

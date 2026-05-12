@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, type PropsWithChildren } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import { JazzClientProvider } from "jazz-tools/react";
 
 import { getConnectionDisplayName, type StoredConnection } from "@/lib/config/connections";
 import { useInspectorRuntime } from "@/hooks/useInspectorRuntime";
@@ -154,7 +155,11 @@ export function InspectorProvider({ children }: PropsWithChildren) {
     ],
   );
 
-  return <InspectorContext.Provider value={value}>{children}</InspectorContext.Provider>;
+  return (
+    <InspectorContext.Provider value={value}>
+      {runtime.client !== null ? <JazzClientProvider client={runtime.client}>{children}</JazzClientProvider> : children}
+    </InspectorContext.Provider>
+  );
 }
 
 export function useInspector(): InspectorContextValue {

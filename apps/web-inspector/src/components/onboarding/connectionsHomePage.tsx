@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@regarde/ui/button";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
+import { inspectorContentMaxWidthClassName } from "#/layout/inspectorShell";
 import {
   getConnectionDisplayName,
   getConnectionSecondaryLabel,
@@ -23,7 +24,7 @@ function ConnectionsSection({ title, children }: ConnectionsSectionProps): React
         </h2>
         <div className="h-px flex-1 bg-border" />
       </div>
-      <div className="flex w-full max-w-100 flex-col items-start">
+      <div className={inspectorContentMaxWidthClassName + " flex w-full flex-col items-start"}>
         {children}
       </div>
     </section>
@@ -35,7 +36,7 @@ export function ConnectionsHomePage(): React.ReactElement {
 
   return (
     <div className="flex h-full flex-1 flex-col items-center justify-center px-6 py-10">
-      <div className="flex w-full max-w-100 flex-col items-start gap-10">
+      <div className={inspectorContentMaxWidthClassName + " flex w-full flex-col items-start gap-10"}>
         <ConnectionsSection title="Get started">
           <Button
             type="button"

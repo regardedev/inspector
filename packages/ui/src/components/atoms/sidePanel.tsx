@@ -4,40 +4,26 @@ import * as React from "react"
 import { Drawer } from "@base-ui/react/drawer"
 import { XIcon } from "lucide-react"
 
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/atoms/button"
+
+type SidePanelSide = "left" | "right"
 
 interface SidePanelContextValue {
   open: boolean
   onOpenChange: (open: boolean) => void
+  toggle: () => void
 }
 
-const SidePanelContext = React.createContext<SidePanelContextValue>({
-  open: false,
-  onOpenChange: () => {},
-})
-
-function useIsMobile(): boolean {
-  const [isMobile, setIsMobile] = React.useState(false)
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 768px)').matches)
-    }
-    checkMobile()
-    const mq = window.matchMedia('(max-width: 768px)')
-    mq.addEventListener('change', checkMobile)
-    return () => mq.removeEventListener('change', checkMobile)
-  }, [])
-
-  return isMobile
-}
+const SidePanelContext = React.createContext<SidePanelContextValue | null>(null)
 
 function useSidePanel(): SidePanelContextValue {
   const context = React.useContext(SidePanelContext)
-  if (context === undefined) {
+  if (context === null) {
     throw new Error("useSidePanel must be used within SidePanel.Provider")
   }
+
   return context
 }
 
@@ -92,20 +78,28 @@ CloseButton.displayName = "SidePanelCloseButton"
 
 function InlinePanel({
   children,
+  className,
+  side,
+  widthClassName,
 }: {
   children: React.ReactNode
+  className?: string
+  side: SidePanelSide
+  widthClassName: string
 }) {
-  const { open } = React.useContext(SidePanelContext)
+  const { open } = useSidePanel()
 
   return (
     <div
       className={cn(
-        "flex-col bg-popover rounded-tl-xs h-full overflow-hidden shrink-0",
+        "flex-col bg-popover h-full overflow-hidden shrink-0",
         "transition-all duration-200 ease-in-out",
-        open ? "w-100 opacity-100" : "w-0 opacity-0"
+        side === "left" ? "rounded-tr-xs" : "rounded-tl-xs",
+        className,
+        open === true ? `${widthClassName} opacity-100` : "w-0 opacity-0"
       )}
     >
-      <div className="relative flex flex-col h-full w-100 overflow-auto">
+      <div className={cn("relative flex flex-col h-full overflow-auto", widthClassName)}>
         {children}
       </div>
     </div>
@@ -115,17 +109,19 @@ InlinePanel.displayName = "SidePanelInline"
 
 function DrawerPanel({
   children,
+  className,
 }: {
   children: React.ReactNode
+  className?: string
 }) {
-  const { open, onOpenChange } = React.useContext(SidePanelContext)
+  const { open, onOpenChange } = useSidePanel()
 
   return (
     <Drawer.Root open={open} onOpenChange={onOpenChange} swipeDirection="down" modal>
       <Drawer.Portal>
         <Drawer.Backdrop className="fixed inset-0 z-50 bg-black/10 data-ending-style:opacity-0" />
         <Drawer.Viewport className="fixed inset-x-0 bottom-0 z-50">
-          <Drawer.Popup className="bg-popover shadow-lg flex flex-col w-full rounded-t-xl border-t max-h-[80vh] data-ending-style:translate-y-full">
+          <Drawer.Popup className={cn("bg-popover shadow-lg flex flex-col w-full rounded-t-xl border-t max-h-[80vh] data-ending-style:translate-y-full", className)}>
             <div className="mx-auto mt-4 h-1 w-12 rounded-full bg-muted" />
             <Drawer.Content className="relative flex flex-col overflow-auto p-4">
               {children}
@@ -140,16 +136,22 @@ DrawerPanel.displayName = "SidePanelDrawer"
 
 function Panel({
   children,
+  className,
+  side = "right",
+  widthClassName = "w-100",
 }: {
   children: React.ReactNode
+  className?: string
+  side?: SidePanelSide
+  widthClassName?: string
 }) {
   const isMobile = useIsMobile()
 
-  if (isMobile) {
-    return <DrawerPanel>{children}</DrawerPanel>
+  if (isMobile === true) {
+    return <DrawerPanel className={className}>{children}</DrawerPanel>
   }
 
-  return <InlinePanel>{children}</InlinePanel>
+  return <InlinePanel className={className} side={side} widthClassName={widthClassName}>{children}</InlinePanel>
 }
 Panel.displayName = "SidePanel"
 
@@ -183,8 +185,12 @@ function Provider({
     [controlledOnOpenChange, isControlled]
   )
 
+  const toggle = React.useCallback(() => {
+    handleOpenChange(open === false)
+  }, [handleOpenChange, open])
+
   return (
-    <SidePanelContext.Provider value={{ open, onOpenChange: handleOpenChange }}>
+    <SidePanelContext.Provider value={{ open, onOpenChange: handleOpenChange, toggle }}>
       {children}
     </SidePanelContext.Provider>
   )

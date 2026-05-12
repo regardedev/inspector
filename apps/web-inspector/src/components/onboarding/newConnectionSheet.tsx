@@ -9,6 +9,7 @@ import { Label } from "@regarde/ui/label";
 import { SidePanel } from "@regarde/ui/sidePanel";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
+import { inspectorDetailPaneWidthClassName } from "#/layout/inspectorShell";
 import { findConnectionByCredentials } from "@/lib/config/connectionIdentity";
 import { DEFAULT_BRANCH_NAME, DEFAULT_SERVER_URL, type ConnectionDraft } from "@/lib/config/connections";
 import { appRoutes } from "@/lib/navigation/appRoutes";
@@ -177,8 +178,8 @@ function NewConnectionPanelContent({ prefill }: NewConnectionPanelContentProps):
   };
 
   return (
-    <SidePanel>
-      <div className="flex h-full flex-col overflow-hidden border-l border-border">
+    <SidePanel side="right" widthClassName={inspectorDetailPaneWidthClassName} className="bg-background">
+      <div className="flex h-full flex-col overflow-hidden border-l border-border bg-background">
         <SidePanel.Header className="h-11 justify-between border-b border-border px-3 py-2">
           <SidePanel.Title className="rounded-xs px-1 py-1 text-sm leading-[1.4] font-normal text-foreground">
             Add New Connection

@@ -1,4 +1,5 @@
 import { ConnectionSwitcher } from "@/components/navigation";
+import { inspectorShellStyle } from "#/layout/inspectorShell";
 
 import { ConnectionsHomePage } from "./connectionsHomePage";
 
@@ -10,7 +11,7 @@ export function ConnectionsLayout({ sheet }: ConnectionsLayoutProps): React.Reac
   const hasSheet = sheet !== null && sheet !== undefined;
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col" style={inspectorShellStyle}>
       <header className="flex h-9 w-full items-center border-b border-border bg-secondary px-3 py-1">
         <ConnectionSwitcher triggerClassName="h-7 rounded-xs px-2" />
       </header>
