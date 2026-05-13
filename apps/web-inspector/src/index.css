@@ -199,4 +199,23 @@
     -webkit-user-select: none;
     user-select: none;
   }
+
+  .inspector-data-grid [data-slot="data-grid-table-viewport"] {
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+  }
+
+  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 9999px;
+  }
 }

@@ -1,0 +1,44 @@
+import type { Table } from "@tanstack/react-table";
+import type { DynamicTableRow } from "jazz-tools";
+
+import { Button } from "@regarde/ui/button";
+import { DataGridColumnVisibility } from "@regarde/ui/dataGrid";
+
+interface DataGridToolbarProps {
+  infiniteScrollEnabled?: boolean;
+  onInfiniteScrollEnabledChange?: (enabled: boolean) => void;
+  showInfiniteScrollToggle?: boolean;
+  table: Table<DynamicTableRow>;
+}
+
+export function DataGridToolbar({
+  infiniteScrollEnabled = true,
+  onInfiniteScrollEnabledChange,
+  showInfiniteScrollToggle = false,
+  table,
+}: DataGridToolbarProps): React.ReactElement {
+  return (
+    <>
+      {showInfiniteScrollToggle === true ? (
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={infiniteScrollEnabled}
+            onChange={(event) => {
+              onInfiniteScrollEnabledChange?.(event.currentTarget.checked);
+            }}
+          />
+          Infinite scroll
+        </label>
+      ) : null}
+      <DataGridColumnVisibility
+        table={table}
+        trigger={
+          <Button type="button" variant="ghost" size="sm">
+            Columns
+          </Button>
+        }
+      />
+    </>
+  );
+}

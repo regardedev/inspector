@@ -61,7 +61,7 @@ export function BranchSwitcher({
         <Button
           variant="ghost"
           size="sm"
-          nativeButton={false}
+          nativeButton={true}
           className={resolvedTriggerClassName}
           render={<ComboboxTrigger />}
         >

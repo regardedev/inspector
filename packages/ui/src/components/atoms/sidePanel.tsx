@@ -79,7 +79,6 @@ CloseButton.displayName = "SidePanelCloseButton"
 function InlinePanel({
   children,
   className,
-  side,
   widthClassName,
 }: {
   children: React.ReactNode
@@ -94,7 +93,6 @@ function InlinePanel({
       className={cn(
         "flex-col bg-popover h-full overflow-hidden shrink-0",
         "transition-all duration-200 ease-in-out",
-        side === "left" ? "rounded-tr-xs" : "rounded-tl-xs",
         className,
         open === true ? `${widthClassName} opacity-100` : "w-0 opacity-0"
       )}

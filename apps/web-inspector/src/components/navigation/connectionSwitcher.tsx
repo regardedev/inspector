@@ -93,14 +93,14 @@ export function ConnectionSwitcher({
         <Button
           variant="ghost"
           size="sm"
-          nativeButton={false}
+          nativeButton={true}
           className={resolvedTriggerClassName}
           render={<ComboboxTrigger />}
         >
           {resolvedTriggerLabel}
         </Button>
       </div>
-      <ComboboxContent anchor={anchorRef} className={contentClassName ?? "w-[360px] p-0"}>
+      <ComboboxContent anchor={anchorRef} className={contentClassName ?? "w-90 p-0"}>
         <div className="sticky top-0 z-20 bg-popover p-1">
           <ComboboxInput
             value={query}

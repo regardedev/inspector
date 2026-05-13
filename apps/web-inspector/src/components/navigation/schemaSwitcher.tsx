@@ -83,7 +83,7 @@ export function SchemaSwitcher({
         <Button
           variant="ghost"
           size="sm"
-          nativeButton={false}
+          nativeButton={true}
           className={resolvedTriggerClassName}
           render={<ComboboxTrigger />}
           title={triggerTitle}
