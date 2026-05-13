@@ -1,6 +1,6 @@
 {
   "name": "regarde-inspector",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Alternative inspector to the default Jazz-tools inspector",
   "repository": {
