@@ -3,10 +3,11 @@ packages:
   - packages/*
 
 allowBuilds:
-  '@swc/core': true
+  "@swc/core": true
   better-sqlite3: true
   esbuild: true
   msw: true
+  protobufjs: true
 
 catalog:
   "@tailwindcss/vite": ^4.3.0
@@ -22,9 +23,9 @@ catalog:
   "@vitejs/plugin-react": "^6.0.1"
   "@vitejs/plugin-react-swc": "^4.3.0"
   class-variance-authority: ^0.7.1
+  "jazz-tools": 2.0.0-alpha.48
   clsx: ^2.1.1
   dotenv: ^17.4.2
-  "jazz-tools": 2.0.0-alpha.46
   little-timestamp: ^1.0.0
   lucide-react: ^1.14.0
   react: 19.2.6
