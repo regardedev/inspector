@@ -200,22 +200,26 @@
     user-select: none;
   }
 
-  .inspector-data-grid [data-slot="data-grid-table-viewport"] {
+  .app-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: gray transparent;
   }
 
-  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar {
+  .app-scrollbar::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
-  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar-track {
+  .app-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .inspector-data-grid [data-slot="data-grid-table-viewport"]::-webkit-scrollbar-thumb {
+  .app-scrollbar::-webkit-scrollbar-thumb {
     background: gray;
     border-radius: 9999px;
+  }
+
+  .inspector-data-grid [data-slot="data-grid-scrollbar"] {
+    scrollbar-width: none;
   }
 }

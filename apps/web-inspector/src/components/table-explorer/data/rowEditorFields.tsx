@@ -137,7 +137,7 @@ export function useRowEditorFields({
 
   return {
     fields: (
-      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-auto pr-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 pr-1">
         {showIdField === true ? (
           <Field>
             {(() => {
@@ -249,14 +249,14 @@ export function useRowEditorFields({
                   </ButtonGroup>
                 ) : column.column_type.type === "Enum" && readOnlyReason === null ? (
                   <Select
-                    value={fieldState.text}
+                    value={fieldState.isNull === true ? "" : fieldState.text}
                     onValueChange={(nextValue) => {
                       setFieldText(column.name, fieldState, nextValue);
                     }}
                     disabled={fieldState.isNull === true}
                   >
                     <SelectTrigger id={fieldId} className="w-full">
-                      <SelectValue placeholder="Select value" />
+                      <SelectValue placeholder={fieldState.isNull === true ? "NULL" : "Select value"} />
                     </SelectTrigger>
                     <SelectContent>
                       {column.column_type.variants.map((variant) => (
@@ -268,51 +268,6 @@ export function useRowEditorFields({
                   </Select>
                 ) : isStructuredColumnType === true || isBinaryColumn === true ? (
                   <div className="flex flex-col gap-2">
-                    {(isStructuredColumnType === true && readOnlyReason === null) || relationTarget !== null ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <div />
-                        <div className="flex items-center gap-3">
-                          {isStructuredColumnType === true && readOnlyReason === null ? (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                try {
-                                  const parsedValue = JSON.parse(fieldState.text) as unknown;
-                                  setFieldText(column.name, fieldState, JSON.stringify(parsedValue, null, 2));
-                                } catch {
-                                  setErrors((currentErrors) => ({
-                                    ...currentErrors,
-                                    [column.name]: `${formatColumnTypeLabel(column)} value is invalid JSON.`,
-                                  }));
-                                }
-                              }}
-                            >
-                              Format
-                            </Button>
-                          ) : null}
-                          {relationTarget !== null &&
-                          column.references !== undefined &&
-                          currentConnectionId !== null &&
-                          currentBranch !== null &&
-                          currentSchemaHash !== null ? (
-                            <a
-                              href={buildRelationTableHref({
-                                connectionId: currentConnectionId,
-                                branch: currentBranch,
-                                schemaHash: currentSchemaHash,
-                                tableName: column.references,
-                                relationId: relationTarget,
-                              })}
-                              className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-                            >
-                              Show
-                            </a>
-                          ) : null}
-                        </div>
-                      </div>
-                    ) : null}
                     <Textarea
                       id={fieldId}
                       className="min-h-28 font-mono"
@@ -379,6 +334,10 @@ export function useRowEditorFields({
 
       for (const field of formFields) {
         if (field.readOnlyReason !== null) {
+          const initialValue = initialRowValues[field.column.name];
+          if (mode === "insert" && initialValue !== undefined) {
+            updates[field.column.name] = initialValue;
+          }
           continue;
         }
 

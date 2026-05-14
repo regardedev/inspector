@@ -34,21 +34,23 @@ export function EditRowForm({
 
   if (rowValues === null) {
     return (
-      <div className="flex h-full flex-col gap-2">
+      <div className="flex h-full min-h-0 flex-col gap-2">
         <p className="text-sm text-muted-foreground">Select a row to edit it.</p>
       </div>
     );
   }
 
   return (
-    <form className="flex h-full flex-col gap-4" onSubmit={submit}>
-      <p className="text-sm text-muted-foreground">{targetRowId}</p>
+    <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
+      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 overflow-auto">
+        <p className="text-sm text-muted-foreground">{targetRowId}</p>
 
-      {fields}
+        {fields}
 
-      {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
+        {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
+      </div>
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-2 px-2 border-t border-border bg-background py-3">
         {onDelete !== undefined ? (
           <Button
             type="button"

@@ -30,7 +30,7 @@ function InsertRowFormFields({
   schemaColumns,
 }: InsertRowFormFieldsProps): React.ReactElement {
   const insertMoreFieldId = "insert-more";
-  
+
   const { fields, isSaving, saveError, submit } = useRowEditorFields({
     initialRowValues: rowValues,
     mode: "insert",
@@ -45,12 +45,13 @@ function InsertRowFormFields({
   });
 
   return (
-    <form className="flex h-full flex-col gap-4" onSubmit={submit}>
-      {fields}
+    <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
+      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 py-2 overflow-auto">
+        {fields}
+        {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
+      </div>
 
-      {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
-
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-2 px-2 border-t border-border bg-background py-3">
         <label htmlFor={insertMoreFieldId} className="flex items-center gap-2 text-sm text-muted-foreground">
           <Switch
             id={insertMoreFieldId}

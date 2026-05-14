@@ -1,4 +1,9 @@
 export { DataGrid, DataGridContainer } from "@/components/reui/data-grid/data-grid"
+export {
+  DataGridScrollArea,
+  type DataGridScrollAreaOrientation,
+  type DataGridScrollAreaProps,
+} from "@/components/reui/data-grid/data-grid-scroll-area"
 export { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 export {
   DataGridTableVirtual,

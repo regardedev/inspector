@@ -28,8 +28,8 @@ export function DataView({
   });
 
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden bg-background">
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <ActionsBar
           view={view}
           onViewChange={onViewChange}
@@ -41,7 +41,7 @@ export function DataView({
         >
           <DataGridToolbar table={state.table} />
         </ActionsBar>
-        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
           <DataGrid
             table={state.table}
             loadedRowCount={state.loadedRowCount}

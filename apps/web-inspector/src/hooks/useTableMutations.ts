@@ -13,6 +13,10 @@ export interface UseTableMutationsResult {
   updateRow: (rowId: string, values: Record<string, unknown>) => Promise<void>;
 }
 
+function omitUndefinedValues(values: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined));
+}
+
 export function useTableMutations(tableName: string): UseTableMutationsResult {
   const db = useDb();
   const { runtime } = useInspector();
@@ -49,7 +53,7 @@ export function useTableMutations(tableName: string): UseTableMutationsResult {
       }
 
       await runMutation(async () => {
-        await db.insert(tableProxy, values).wait({ tier: "edge" });
+        await db.insert(tableProxy, omitUndefinedValues(values)).wait({ tier: "edge" });
       });
     },
     updateRow: async (rowId, values) => {
@@ -58,7 +62,7 @@ export function useTableMutations(tableName: string): UseTableMutationsResult {
       }
 
       await runMutation(async () => {
-        await db.update(tableProxy, rowId, values).wait({ tier: "edge" });
+        await db.update(tableProxy, rowId, omitUndefinedValues(values)).wait({ tier: "edge" });
       });
     },
     deleteRow: async (rowId) => {

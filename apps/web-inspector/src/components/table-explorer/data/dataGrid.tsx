@@ -4,6 +4,7 @@ import type { DynamicTableRow } from "jazz-tools";
 import {
   DataGrid as Grid,
   DataGridContainer,
+  DataGridScrollArea,
   DataGridTableVirtual,
 } from "@regarde/ui/dataGrid";
 
@@ -23,7 +24,7 @@ export function DataGrid({
   table,
 }: DataGridProps): React.ReactElement {
   return (
-    <div className="inspector-data-grid flex h-full min-h-0 flex-1 overflow-hidden bg-background">
+    <div className="inspector-data-grid flex h-full min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
       <Grid
         table={table}
         recordCount={loadedRowCount}
@@ -39,17 +40,19 @@ export function DataGrid({
           cellBorder: true,
 
         }}
-        className="flex h-full min-h-0 flex-1 flex-col"
+        className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
       >
-        <DataGridContainer className="flex h-full min-h-0 flex-1 flex-col rounded-none border-0">
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <DataGridTableVirtual
-              height="100%"
-              onFetchMore={hasMore === true ? onFetchMore : undefined}
-              hasMore={hasMore}
-              isFetchingMore={isFetchingMore}
-              fetchMoreOffset={8}
-            />
+        <DataGridContainer className="flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-none border-0">
+          <div className="data-grid-scroll-region min-h-0 min-w-0 flex-1 overflow-hidden">
+            <DataGridScrollArea className="app-scrollbar flex h-full min-h-0 min-w-0 flex-col">
+              <DataGridTableVirtual
+                height="100%"
+                onFetchMore={hasMore === true ? onFetchMore : undefined}
+                hasMore={hasMore}
+                isFetchingMore={isFetchingMore}
+                fetchMoreOffset={8}
+              />
+            </DataGridScrollArea>
           </div>
           <div className="flex min-h-10 shrink-0 items-center justify-between gap-3 border-t border-border bg-background px-3 py-2 text-sm text-muted-foreground">
             <span>{loadedRowCount} rows loaded</span>

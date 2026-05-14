@@ -13,6 +13,7 @@ import { useTableMutations } from "@/hooks/useTableMutations";
 import { useTableQuery } from "@/hooks/useTableQuery";
 import { useTableSelection } from "@/hooks/useTableSelection";
 import { appRoutes } from "@/lib/navigation/appRoutes";
+import { getFieldReadOnlyReason } from "@/lib/table-explorer/mutationParsing";
 import { getTableColumns } from "@/lib/table-explorer/tableSchema";
 import type { DetailPaneMode, InspectorRowEditorMode, TableRowId } from "@/types/tableExplorer";
 
@@ -48,7 +49,14 @@ interface UseDataViewStateResult {
 }
 
 function createInsertRowValues(schemaColumns: ColumnDescriptor[]): Record<string, unknown> {
-  return Object.fromEntries(schemaColumns.map((column) => [column.name, undefined]));
+  return Object.fromEntries(
+    schemaColumns.map((column) => {
+      const readOnlyReason = getFieldReadOnlyReason(column);
+      const initialValue = readOnlyReason === "binary" && column.column_type.type === "Bytea" ? new Uint8Array() : undefined;
+
+      return [column.name, initialValue];
+    }),
+  );
 }
 
 export function useDataViewState({

@@ -37,7 +37,7 @@ function Header({ className, children, ...props }: React.ComponentProps<"div">) 
 Header.displayName = "SidePanelHeader"
 
 function Content({ className, children, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("flex-1 overflow-auto p-2 mt-4", className)} {...props}>{children}</div>
+  return <div className={cn("mt-4 flex-1 min-h-0 p-2", className)} {...props}>{children}</div>
 }
 Content.displayName = "SidePanelContent"
 
@@ -97,7 +97,7 @@ function InlinePanel({
         open === true ? `${widthClassName} opacity-100` : "w-0 opacity-0"
       )}
     >
-      <div className={cn("relative flex flex-col h-full overflow-auto", widthClassName)}>
+      <div className={cn("relative flex h-full min-h-0 flex-col overflow-hidden", widthClassName)}>
         {children}
       </div>
     </div>
