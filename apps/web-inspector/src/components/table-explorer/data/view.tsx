@@ -3,7 +3,8 @@ import { Button } from "@regarde/ui/button";
 import { ActionsBar } from "@/components/table-explorer/actionsBar";
 import { DataGrid } from "@/components/table-explorer/data/dataGrid";
 import { DataGridToolbar } from "@/components/table-explorer/data/dataGridToolbar";
-import { RowEditorForm } from "@/components/table-explorer/data/rowEditorForm";
+import { EditRowForm } from "@/components/table-explorer/data/editRowForm";
+import { InsertRowForm } from "@/components/table-explorer/data/insertRowForm";
 import { RowEditorSidePanel } from "@/components/table-explorer/data/rowEditorSidePanel";
 import { useDataViewState } from "@/components/table-explorer/data/useDataViewState";
 import type { DetailPaneMode, TableExplorerView } from "@/types/tableExplorer";
@@ -54,7 +55,6 @@ export function DataView({
         open={state.rowEditor.isOpen}
         onOpenChange={state.handleRowEditorOpenChange}
         mode={state.rowEditor.mode === "insert" ? "insert" : "edit"}
-        tableName={tableName}
         editedRowIds={state.rowEditor.editedRowIds}
         activeRowIndex={state.rowEditor.activeRowIndex}
         activeRowId={state.rowEditor.activeRowId}
@@ -63,18 +63,29 @@ export function DataView({
         onNavigatePrevious={state.rowEditor.goToPreviousRow}
         onNavigateNext={state.rowEditor.goToNextRow}
       >
-        <RowEditorForm
-          mode={state.rowEditor.mode === "insert" ? "insert" : "edit"}
-          rowValues={state.rowValues}
-          schemaColumns={state.schemaColumns}
-          tableName={tableName}
-          targetRowId={state.rowEditor.activeRowId}
-          onCancel={() => {
-            state.handleRowEditorOpenChange(false);
-          }}
-          onDelete={state.handleDelete}
-          onSave={state.handleSave}
-        />
+        {state.rowEditor.mode === "insert" ? (
+          <InsertRowForm
+            key={`${tableName}:insert`}
+            rowValues={state.rowValues ?? {}}
+            schemaColumns={state.schemaColumns}
+            onCancel={() => {
+              state.handleRowEditorOpenChange(false);
+            }}
+            onSave={state.handleInsertSave}
+          />
+        ) : (
+          <EditRowForm
+            key={`${tableName}:${state.rowEditor.activeRowId ?? "none"}`}
+            rowValues={state.rowValues}
+            schemaColumns={state.schemaColumns}
+            targetRowId={state.rowEditor.activeRowId}
+            onCancel={() => {
+              state.handleRowEditorOpenChange(false);
+            }}
+            onDelete={state.handleDelete}
+            onSave={state.handleEditSave}
+          />
+        )}
       </RowEditorSidePanel>
     </div>
   );

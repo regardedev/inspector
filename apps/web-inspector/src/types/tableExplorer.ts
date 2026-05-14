@@ -19,13 +19,16 @@ export interface TableExplorerSearchState {
 
 export type TableColumnVisibilityState = Record<string, boolean>;
 
-export type InspectorRowEditorMode = "closed" | DetailPaneMode;
+export type InspectorRowEditorState =
+  | { kind: "closed" }
+  | { kind: "insert" }
+  | {
+      kind: "edit";
+      editedRowIds: TableRowId[];
+      activeRowIndex: number;
+    };
 
-export interface InspectorRowEditorState {
-  mode: InspectorRowEditorMode;
-  editedRowIds: TableRowId[];
-  activeRowIndex: number;
-}
+export type InspectorRowEditorMode = InspectorRowEditorState["kind"];
 
 export interface TableColumnMeta {
   id: string;

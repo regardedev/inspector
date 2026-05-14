@@ -31,10 +31,13 @@ export function DataGrid({
           headerSticky: true,
           columnsVisibility: false,
           columnsResizable: true,
-          columnsPinnable: false,
+          columnsPinnable: true, // TODO: add icon + logic
           columnsMovable: true,
           rowBorder: true,
           columnsDraggable: true,
+          rowBorder: true,
+          cellBorder: true,
+
         }}
         className="flex h-full min-h-0 flex-1 flex-col"
       >

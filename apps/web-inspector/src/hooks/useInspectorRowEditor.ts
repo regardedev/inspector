@@ -1,11 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useReducer } from "react";
 
-import type { DetailPaneMode, InspectorRowEditorMode, TableRowId } from "@/types/tableExplorer";
-
-interface UseInspectorRowEditorOptions {
-  forcedMode?: DetailPaneMode | null;
-  selectedRowIds: TableRowId[];
-}
+import type { InspectorRowEditorMode, InspectorRowEditorState, TableRowId } from "@/types/tableExplorer";
 
 interface UseInspectorRowEditorResult {
   activeRowId: TableRowId | null;
@@ -16,82 +11,93 @@ interface UseInspectorRowEditorResult {
   goToPreviousRow: () => void;
   isOpen: boolean;
   mode: InspectorRowEditorMode;
-  openEditSelection: (rowIds?: TableRowId[]) => void;
+  openEdit: (rowIds: TableRowId[], activeRowIndex?: number) => void;
   openInsert: () => void;
   setActiveRowIndex: (index: number) => void;
 }
 
-export function useInspectorRowEditor({
-  forcedMode = null,
-  selectedRowIds,
-}: UseInspectorRowEditorOptions): UseInspectorRowEditorResult {
-  const [mode, setMode] = useState<InspectorRowEditorMode>(forcedMode ?? "closed");
-  const [editedRowIds, setEditedRowIds] = useState<TableRowId[]>([]);
-  const [activeRowIndex, setActiveRowIndex] = useState(0);
+type RowEditorAction =
+  | { type: "close" }
+  | { type: "openInsert" }
+  | { type: "openEdit"; activeRowIndex: number; rowIds: TableRowId[] }
+  | { type: "setActiveRowIndex"; index: number }
+  | { type: "goToNextRow" }
+  | { type: "goToPreviousRow" };
 
-  useEffect(() => {
-    if (forcedMode === null) {
-      return;
+function clampActiveRowIndex(index: number, editedRowIds: TableRowId[]): number {
+  if (editedRowIds.length === 0) {
+    return 0;
+  }
+
+  return Math.min(Math.max(index, 0), editedRowIds.length - 1);
+}
+
+function rowEditorReducer(state: InspectorRowEditorState, action: RowEditorAction): InspectorRowEditorState {
+  switch (action.type) {
+    case "close": {
+      return { kind: "closed" };
     }
-
-    setMode(forcedMode);
-  }, [forcedMode]);
-
-  useEffect(() => {
-    if (mode === "insert") {
-      return;
+    case "openInsert": {
+      return { kind: "insert" };
     }
-
-    const hasSameEditedRowIds =
-      editedRowIds.length === selectedRowIds.length &&
-      editedRowIds.every((rowId, index) => rowId === selectedRowIds[index]);
-
-    if (selectedRowIds.length === 0) {
-      if (forcedMode === "edit") {
-        if (mode !== "edit") {
-          setMode("edit");
-        }
-        if (editedRowIds.length > 0) {
-          setEditedRowIds([]);
-        }
-        if (activeRowIndex !== 0) {
-          setActiveRowIndex(0);
-        }
-        return;
+    case "openEdit": {
+      if (action.rowIds.length === 0) {
+        return { kind: "closed" };
       }
 
-      if (mode !== "closed") {
-        setMode("closed");
-      }
-      if (editedRowIds.length > 0) {
-        setEditedRowIds([]);
-      }
-      if (activeRowIndex !== 0) {
-        setActiveRowIndex(0);
-      }
-      return;
+      return {
+        kind: "edit",
+        editedRowIds: action.rowIds,
+        activeRowIndex: clampActiveRowIndex(action.activeRowIndex, action.rowIds),
+      };
     }
+    case "setActiveRowIndex": {
+      if (state.kind !== "edit") {
+        return state;
+      }
 
-    if (mode !== "edit") {
-      setMode("edit");
+      return {
+        ...state,
+        activeRowIndex: clampActiveRowIndex(action.index, state.editedRowIds),
+      };
     }
-    if (hasSameEditedRowIds === false) {
-      setEditedRowIds(selectedRowIds);
-    }
+    case "goToNextRow": {
+      if (state.kind !== "edit") {
+        return state;
+      }
 
-    const nextActiveRowIndex = Math.min(activeRowIndex, selectedRowIds.length - 1);
-    if (nextActiveRowIndex !== activeRowIndex) {
-      setActiveRowIndex(nextActiveRowIndex);
+      return {
+        ...state,
+        activeRowIndex: clampActiveRowIndex(state.activeRowIndex + 1, state.editedRowIds),
+      };
     }
-  }, [activeRowIndex, editedRowIds, forcedMode, mode, selectedRowIds]);
+    case "goToPreviousRow": {
+      if (state.kind !== "edit") {
+        return state;
+      }
+
+      return {
+        ...state,
+        activeRowIndex: clampActiveRowIndex(state.activeRowIndex - 1, state.editedRowIds),
+      };
+    }
+  }
+}
+
+export function useInspectorRowEditor(): UseInspectorRowEditorResult {
+  const [state, dispatch] = useReducer(rowEditorReducer, { kind: "closed" });
+
+  const mode = state.kind;
+  const editedRowIds = state.kind === "edit" ? state.editedRowIds : [];
+  const activeRowIndex = state.kind === "edit" ? state.activeRowIndex : 0;
 
   const activeRowId = useMemo(() => {
-    if (mode !== "edit") {
+    if (state.kind !== "edit") {
       return null;
     }
 
-    return editedRowIds[activeRowIndex] ?? null;
-  }, [activeRowIndex, editedRowIds, mode]);
+    return state.editedRowIds[state.activeRowIndex] ?? null;
+  }, [state]);
 
   return {
     activeRowId,
@@ -100,48 +106,22 @@ export function useInspectorRowEditor({
     mode,
     isOpen: mode !== "closed",
     openInsert: () => {
-      setMode("insert");
-      setEditedRowIds([]);
-      setActiveRowIndex(0);
+      dispatch({ type: "openInsert" });
     },
-    openEditSelection: (rowIds) => {
-      const nextEditedRowIds = rowIds ?? selectedRowIds;
-      if (nextEditedRowIds.length === 0) {
-        return;
-      }
-
-      setMode("edit");
-      setEditedRowIds(nextEditedRowIds);
-      setActiveRowIndex(0);
+    openEdit: (rowIds, nextActiveRowIndex = 0) => {
+      dispatch({ type: "openEdit", rowIds, activeRowIndex: nextActiveRowIndex });
     },
     close: () => {
-      if (forcedMode !== null) {
-        setMode(forcedMode);
-        if (forcedMode === "edit") {
-          setEditedRowIds(selectedRowIds);
-          setActiveRowIndex(0);
-          return;
-        }
-      }
-
-      setMode("closed");
-      setEditedRowIds([]);
-      setActiveRowIndex(0);
+      dispatch({ type: "close" });
     },
     goToNextRow: () => {
-      setActiveRowIndex((currentActiveRowIndex) => {
-        if (editedRowIds.length === 0) {
-          return 0;
-        }
-
-        return Math.min(currentActiveRowIndex + 1, editedRowIds.length - 1);
-      });
+      dispatch({ type: "goToNextRow" });
     },
     goToPreviousRow: () => {
-      setActiveRowIndex((currentActiveRowIndex) => Math.max(currentActiveRowIndex - 1, 0));
+      dispatch({ type: "goToPreviousRow" });
     },
     setActiveRowIndex: (index) => {
-      setActiveRowIndex(index);
+      dispatch({ type: "setActiveRowIndex", index });
     },
   };
 }

@@ -1,5 +1,5 @@
 import type { ColumnDescriptor } from "jazz-tools";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 import { Button } from "@regarde/ui/button";
 
@@ -22,7 +22,6 @@ interface RowEditorSidePanelProps {
 }
 
 export function RowEditorSidePanel({
-  activeRowId,
   activeRowIndex,
   children,
   editedRowIds,
@@ -40,38 +39,33 @@ export function RowEditorSidePanel({
       open={open}
       onOpenChange={onOpenChange}
       title={
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-foreground">{title}</p>
-            {mode === "edit" ? (
-              <p className="truncate text-xs text-muted-foreground">
-                {hasMultipleRows === true ? `${editedRowIds.length} selected` : activeRowId}
-              </p>
-            ) : null}
-          </div>
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <p className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{title}</p>
           {hasMultipleRows === true ? (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="ml-auto flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
               <span>{activeRowIndex + 1} / {editedRowIds.length}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                disabled={activeRowIndex === 0}
-                onClick={onNavigatePrevious}
-                aria-label="Previous selected row"
-              >
-                <ChevronLeftIcon className="size-3.5" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                disabled={activeRowIndex >= editedRowIds.length - 1}
-                onClick={onNavigateNext}
-                aria-label="Next selected row"
-              >
-                <ChevronRightIcon className="size-3.5" />
-              </Button>
+              <div className="flex items-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={activeRowIndex === 0}
+                  onClick={onNavigatePrevious}
+                  aria-label="Previous selected row"
+                >
+                  <ArrowUpIcon className="size-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={activeRowIndex >= editedRowIds.length - 1}
+                  onClick={onNavigateNext}
+                  aria-label="Next selected row"
+                >
+                  <ArrowDownIcon className="size-3.5" />
+                </Button>
+              </div>
             </div>
           ) : null}
         </div>

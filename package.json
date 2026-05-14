@@ -17,7 +17,7 @@
     "build": "pnpm build:packages"
   },
   "author": "cleminso",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.1.1",
   "dependencies": {
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { TableRowId } from "@/types/tableExplorer";
 
@@ -19,15 +19,12 @@ export interface UseTableSelectionResult {
 export function useTableSelection({
   validRowIds,
 }: UseTableSelectionOptions): UseTableSelectionResult {
-  const [selectedRowIds, setSelectedRowIds] = useState<TableRowId[]>([]);
+  const [storedSelectedRowIds, setStoredSelectedRowIds] = useState<TableRowId[]>([]);
+  const validRowIdsSet = useMemo(() => new Set(validRowIds), [validRowIds]);
 
-  useEffect(() => {
-    setSelectedRowIds((currentSelectedRowIds) => {
-      const nextSelectedRowIds = currentSelectedRowIds.filter((rowId) => validRowIds.includes(rowId));
-      const hasChanged = nextSelectedRowIds.length !== currentSelectedRowIds.length;
-      return hasChanged === true ? nextSelectedRowIds : currentSelectedRowIds;
-    });
-  }, [validRowIds]);
+  const selectedRowIds = useMemo(() => {
+    return storedSelectedRowIds.filter((rowId) => validRowIdsSet.has(rowId) === true);
+  }, [storedSelectedRowIds, validRowIdsSet]);
 
   const activeRowId = useMemo<TableRowId | null>(() => {
     return selectedRowIds[0] ?? null;
@@ -38,27 +35,35 @@ export function useTableSelection({
     selectedRowIds,
     selectedRowCount: selectedRowIds.length,
     clearSelection: () => {
-      setSelectedRowIds([]);
+      setStoredSelectedRowIds([]);
     },
-    setSelectedRowIds,
+    setSelectedRowIds: (rowIds) => {
+      setStoredSelectedRowIds(rowIds.filter((rowId) => validRowIdsSet.has(rowId) === true));
+    },
     toggleAllRows: (rowIds, checked) => {
       if (checked === true) {
-        setSelectedRowIds(rowIds);
+        setStoredSelectedRowIds(rowIds.filter((rowId) => validRowIdsSet.has(rowId) === true));
         return;
       }
 
-      setSelectedRowIds([]);
+      setStoredSelectedRowIds([]);
     },
     toggleRow: (rowId, checked) => {
-      setSelectedRowIds((currentSelectedRowIds) => {
-        const hasRowId = currentSelectedRowIds.includes(rowId);
+      setStoredSelectedRowIds((currentSelectedRowIds) => {
+        const nextSelectedRowIds = currentSelectedRowIds.filter((currentRowId) => validRowIdsSet.has(currentRowId) === true);
+        const hasRowId = nextSelectedRowIds.includes(rowId);
         if (checked === true && hasRowId === false) {
-          return [...currentSelectedRowIds, rowId];
+          if (validRowIdsSet.has(rowId) === false) {
+            return nextSelectedRowIds;
+          }
+
+          return [...nextSelectedRowIds, rowId];
         }
         if (checked === false && hasRowId === true) {
-          return currentSelectedRowIds.filter((currentRowId) => currentRowId !== rowId);
+          return nextSelectedRowIds.filter((currentRowId) => currentRowId !== rowId);
         }
-        return currentSelectedRowIds;
+
+        return nextSelectedRowIds;
       });
     },
   };

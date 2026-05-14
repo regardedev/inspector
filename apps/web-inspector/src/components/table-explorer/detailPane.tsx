@@ -21,8 +21,7 @@ export function DetailPane({
     <SidePanel.Provider open={open} onOpenChange={onOpenChange}>
       <SidePanel side="right" widthClassName={inspectorDetailPaneWidthClassName} className="bg-background">
         <SidePanel.Header className="border-l border-border bg-background">
-          <SidePanel.CloseButton />
-          <SidePanel.Title>{title}</SidePanel.Title>
+          <SidePanel.Title className="flex min-w-0 flex-1 items-center">{title}</SidePanel.Title>
         </SidePanel.Header>
         <SidePanel.Content className="mt-0 border-l border-border bg-background p-3">
           {children}

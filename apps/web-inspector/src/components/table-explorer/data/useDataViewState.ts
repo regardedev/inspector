@@ -35,8 +35,9 @@ interface DataViewRowEditorState {
 interface UseDataViewStateResult {
   fetchMore: () => void;
   handleDelete: (() => Promise<void>) | undefined;
+  handleEditSave: (values: Record<string, unknown>) => Promise<void>;
+  handleInsertSave: (values: Record<string, unknown>) => Promise<void>;
   handleRowEditorOpenChange: (open: boolean) => void;
-  handleSave: (values: Record<string, unknown>) => Promise<void>;
   hasMore: boolean;
   isFetchingMore: boolean;
   loadedRowCount: number;
@@ -61,7 +62,7 @@ export function useDataViewState({
   const schemaColumns = useMemo(() => getTableColumns(runtime.wasmSchema, tableName), [runtime.wasmSchema, tableName]);
   const validRowIds = useMemo(() => query.rows.map((row) => String(row.id)), [query.rows]);
   const selection = useTableSelection({ validRowIds });
-  const rowEditor = useInspectorRowEditor({ forcedMode: forcedDetailPaneMode, selectedRowIds: selection.selectedRowIds });
+  const rowEditor = useInspectorRowEditor();
   const mutations = useTableMutations(tableName);
   const tableKey = `${currentConnectionId ?? "unknown"}:${currentBranch ?? "unknown"}:${currentSchemaHash ?? "unknown"}:${tableName}`;
   const columnIds = useMemo(() => query.columns.map((column) => column.id), [query.columns]);
@@ -69,6 +70,18 @@ export function useDataViewState({
     tableKey,
     columnIds,
   });
+
+  const handleSelectedRowIdsChange = (nextSelectedRowIds: TableRowId[]) => {
+    selection.setSelectedRowIds(nextSelectedRowIds);
+
+    if (nextSelectedRowIds.length === 0) {
+      rowEditor.close();
+      return;
+    }
+
+    rowEditor.openEdit(nextSelectedRowIds);
+  };
+
   const table = useDataGrid({
     rows: query.rows,
     columns: query.columns,
@@ -77,7 +90,7 @@ export function useDataViewState({
     selectedRowIds: selection.selectedRowIds,
     columnVisibility: visibility.columnVisibility,
     onSortChange: searchState.setSorting,
-    onSelectedRowIdsChange: selection.setSelectedRowIds,
+    onSelectedRowIdsChange: handleSelectedRowIdsChange,
     onColumnVisibilityChange: visibility.setColumnVisibility,
   });
   const selectedRow = useMemo(() => {
@@ -114,6 +127,11 @@ export function useDataViewState({
     rowEditor.close();
   };
 
+  const openInsert = () => {
+    selection.clearSelection();
+    rowEditor.openInsert();
+  };
+
   const handleDelete = rowEditor.mode === "edit" && rowEditor.activeRowId !== null
     ? async () => {
         const activeRowId = rowEditor.activeRowId;
@@ -124,18 +142,20 @@ export function useDataViewState({
 
         await mutations.deleteRow(activeRowId);
         const nextSelectedRowIds = selection.selectedRowIds.filter((rowId) => rowId !== activeRowId);
-        selection.setSelectedRowIds(nextSelectedRowIds);
+        handleSelectedRowIdsChange(nextSelectedRowIds);
 
         if (nextSelectedRowIds.length === 0) {
           closeDetailPane();
           return;
         }
 
-        if (rowEditor.activeRowIndex >= nextSelectedRowIds.length) {
-          rowEditor.setActiveRowIndex(nextSelectedRowIds.length - 1);
-        }
+        const nextActiveRowIndex = Math.min(rowEditor.activeRowIndex, nextSelectedRowIds.length - 1);
+        rowEditor.openEdit(nextSelectedRowIds, nextActiveRowIndex);
       }
     : undefined;
+
+  const resolvedRowEditorMode: InspectorRowEditorMode =
+    forcedDetailPaneMode === "edit" && rowEditor.mode === "closed" ? "edit" : rowEditor.mode;
 
   return {
     table,
@@ -151,9 +171,9 @@ export function useDataViewState({
       editedRowIds: rowEditor.editedRowIds,
       goToNextRow: rowEditor.goToNextRow,
       goToPreviousRow: rowEditor.goToPreviousRow,
-      isOpen: rowEditor.isOpen,
-      mode: rowEditor.mode,
-      openInsert: rowEditor.openInsert,
+      isOpen: forcedDetailPaneMode === "edit" ? true : rowEditor.isOpen,
+      mode: resolvedRowEditorMode,
+      openInsert,
     },
     handleRowEditorOpenChange: (open) => {
       if (open === false) {
@@ -161,17 +181,21 @@ export function useDataViewState({
       }
     },
     handleDelete,
-    handleSave: async (values) => {
-      if (rowEditor.mode === "insert") {
-        await mutations.insertRow(values);
-        query.resetLoadedRows();
-        closeDetailPane();
-        return;
-      }
-
+    handleEditSave: async (values) => {
       if (rowEditor.activeRowId !== null) {
         await mutations.updateRow(rowEditor.activeRowId, values);
       }
+    },
+    handleInsertSave: async (values, options) => {
+      await mutations.insertRow(values);
+      query.resetLoadedRows();
+
+      if (options?.keepOpen === true) {
+        rowEditor.openInsert();
+        return;
+      }
+
+      closeDetailPane();
     },
   };
 }
