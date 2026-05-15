@@ -43,8 +43,8 @@ export function DataGrid({
         className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
       >
         <DataGridContainer className="flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-none border-0">
-          <div className="data-grid-scroll-region min-h-0 min-w-0 flex-1 overflow-hidden">
-            <DataGridScrollArea className="app-scrollbar flex h-full min-h-0 min-w-0 flex-col">
+          <div className="data-grid-scroll-region relative min-h-0 min-w-0 flex-1 overflow-hidden">
+            <DataGridScrollArea className="app-scrollbar absolute inset-0 flex min-h-0 min-w-0 flex-col">
               <DataGridTableVirtual
                 height="100%"
                 onFetchMore={hasMore === true ? onFetchMore : undefined}

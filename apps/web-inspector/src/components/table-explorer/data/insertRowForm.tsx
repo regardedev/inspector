@@ -46,7 +46,7 @@ function InsertRowFormFields({
 
   return (
     <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
-      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 py-2 overflow-auto">
+      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 py-2 mb-2 overflow-auto">
         {fields}
         {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
       </div>

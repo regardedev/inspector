@@ -1,8 +1,5 @@
-import { useMemo } from "react";
-
 import { ActionsBar } from "@/components/table-explorer/actionsBar";
 import { useInspector } from "@/components/providers/inspectorProvider";
-import { getTableColumns } from "@/lib/table-explorer/tableSchema";
 import type { TableExplorerView } from "@/types/tableExplorer";
 
 interface SchemaViewProps {
@@ -13,43 +10,29 @@ interface SchemaViewProps {
 
 export function SchemaView({ onViewChange, tableName, view }: SchemaViewProps): React.ReactElement {
   const { runtime } = useInspector();
-  const tableSchema = useMemo(() => {
-    return runtime.wasmSchema?.[tableName] ?? null;
-  }, [runtime.wasmSchema, tableName]);
-  const tablePermissions = useMemo(() => {
-    return runtime.storedPermissions?.permissions?.[tableName] ?? null;
-  }, [runtime.storedPermissions, tableName]);
-  const columns = useMemo(() => getTableColumns(runtime.wasmSchema, tableName), [runtime.wasmSchema, tableName]);
+  const tableSchema = runtime.wasmSchema?.[tableName] ?? null;
+  const tablePermissions = runtime.storedPermissions?.permissions?.[tableName] ?? null;
+  const schemaJson = JSON.stringify({ [tableName]: tableSchema }, null, 2);
+  const permissionsJson = JSON.stringify({ [tableName]: tablePermissions }, null, 2);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
       <ActionsBar view={view} onViewChange={onViewChange} />
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-auto p-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <section className="rounded-sm border border-border bg-background p-4">
-          <p className="mb-3 text-sm font-medium text-foreground">Columns</p>
-          <div className="flex flex-col gap-3">
-            {columns.map((column) => (
-              <div key={column.name} className="rounded-sm border border-border px-3 py-2">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-foreground">{column.name}</span>
-                  <span className="text-xs text-muted-foreground">{column.column_type.type}</span>
-                </div>
-                <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  <span>{column.nullable === true ? "nullable" : "required"}</span>
-                  {column.references !== undefined ? <span>references {column.references}</span> : null}
-                </div>
-              </div>
-            ))}
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden xl:grid-cols-2">
+        <section className="flex min-h-0 flex-col overflow-hidden border-b border-border xl:border-r xl:border-b-0">
+          <div className="flex h-10 shrink-0 items-center justify-center border-b border-border px-3">
+            <h2 className="text-sm font-medium text-foreground">Schema</h2>
+          </div>
+          <div className="app-scrollbar min-h-0 flex-1 overflow-auto p-3">
+            <pre className="text-xs text-muted-foreground">{schemaJson}</pre>
           </div>
         </section>
-        <section className="flex min-h-0 flex-col gap-4">
-          <div className="min-h-0 rounded-sm border border-border bg-background p-4">
-            <p className="mb-3 text-sm font-medium text-foreground">Schema JSON</p>
-            <pre className="overflow-auto text-xs text-muted-foreground">{JSON.stringify({ [tableName]: tableSchema }, null, 2)}</pre>
+        <section className="flex min-h-0 flex-col overflow-hidden">
+          <div className="flex h-10 shrink-0 items-center justify-center border-b border-border px-3">
+            <h2 className="text-sm font-medium text-foreground">Permissions</h2>
           </div>
-          <div className="min-h-0 rounded-sm border border-border bg-background p-4">
-            <p className="mb-3 text-sm font-medium text-foreground">Permissions JSON</p>
-            <pre className="overflow-auto text-xs text-muted-foreground">{JSON.stringify({ [tableName]: tablePermissions }, null, 2)}</pre>
+          <div className="app-scrollbar min-h-0 flex-1 overflow-auto p-3">
+            <pre className="text-xs text-muted-foreground">{permissionsJson}</pre>
           </div>
         </section>
       </div>

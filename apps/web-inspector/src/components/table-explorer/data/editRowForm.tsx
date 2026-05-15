@@ -42,7 +42,7 @@ export function EditRowForm({
 
   return (
     <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
-      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 overflow-auto">
+      <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 mb-2 overflow-auto">
         <p className="text-sm text-muted-foreground">{targetRowId}</p>
 
         {fields}
