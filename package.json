@@ -14,25 +14,8 @@
   ],
   "scripts": {
     "dev": "pnpm -r dev",
-    "build": "pnpm build:packages"
+    "build": "pnpm -r build"
   },
   "author": "cleminso",
-  "packageManager": "pnpm@11.1.1",
-  "dependencies": {
-    "@tanstack/react-router": "catalog:",
-    "@tanstack/react-router-devtools": "catalog:",
-    "@tanstack/react-table": "catalog:",
-    "@tanstack/react-virtual": "catalog:",
-    "jazz-tools": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "swr": "catalog:"
-  },
-  "devDependencies": {
-    "@tanstack/router-plugin": "catalog:",
-    "@vitejs/plugin-react-swc": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-top-level-await": "catalog:",
-    "vite-plugin-wasm": "catalog:"
-  }
+  "packageManager": "pnpm@11.1.1"
 }
