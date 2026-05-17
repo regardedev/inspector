@@ -3,7 +3,7 @@ export {
   DataGridScrollArea,
   type DataGridScrollAreaOrientation,
   type DataGridScrollAreaProps,
-} from "@/components/reui/data-grid/data-grid-scroll-area"
+} from "./dataGridScrollArea"
 export { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 export {
   DataGridTableVirtual,

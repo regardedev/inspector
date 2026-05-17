@@ -15,7 +15,9 @@ import { Route as ConnConnectionIdIndexRouteImport } from './routes/conn/$connec
 import { Route as ConnConnectionIdBranchIndexRouteImport } from './routes/conn/$connectionId/$branch/index'
 import { Route as ConnConnectionIdBranchSchemaHashIndexRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/index'
 import { Route as ConnConnectionIdBranchSchemaHashTablesRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/tables'
+import { Route as ConnConnectionIdBranchSchemaHashLiveQueryRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/live-query'
 import { Route as ConnConnectionIdBranchSchemaHashTablesIndexRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/tables/index'
+import { Route as ConnConnectionIdBranchSchemaHashLiveQueryIndexRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/live-query/index'
 import { Route as ConnConnectionIdBranchSchemaHashTablesTableNameIndexRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/tables/$tableName/index'
 import { Route as ConnConnectionIdBranchSchemaHashTablesTableNameEditRouteImport } from './routes/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit'
 
@@ -52,11 +54,23 @@ const ConnConnectionIdBranchSchemaHashTablesRoute =
     path: '/$connectionId/$branch/$schemaHash/tables',
     getParentRoute: () => ConnRoute,
   } as any)
+const ConnConnectionIdBranchSchemaHashLiveQueryRoute =
+  ConnConnectionIdBranchSchemaHashLiveQueryRouteImport.update({
+    id: '/$connectionId/$branch/$schemaHash/live-query',
+    path: '/$connectionId/$branch/$schemaHash/live-query',
+    getParentRoute: () => ConnRoute,
+  } as any)
 const ConnConnectionIdBranchSchemaHashTablesIndexRoute =
   ConnConnectionIdBranchSchemaHashTablesIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => ConnConnectionIdBranchSchemaHashTablesRoute,
+  } as any)
+const ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute =
+  ConnConnectionIdBranchSchemaHashLiveQueryIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ConnConnectionIdBranchSchemaHashLiveQueryRoute,
   } as any)
 const ConnConnectionIdBranchSchemaHashTablesTableNameIndexRoute =
   ConnConnectionIdBranchSchemaHashTablesTableNameIndexRouteImport.update({
@@ -76,8 +90,10 @@ export interface FileRoutesByFullPath {
   '/conn/new': typeof ConnNewRoute
   '/conn/$connectionId/': typeof ConnConnectionIdIndexRoute
   '/conn/$connectionId/$branch/': typeof ConnConnectionIdBranchIndexRoute
+  '/conn/$connectionId/$branch/$schemaHash/live-query': typeof ConnConnectionIdBranchSchemaHashLiveQueryRouteWithChildren
   '/conn/$connectionId/$branch/$schemaHash/tables': typeof ConnConnectionIdBranchSchemaHashTablesRouteWithChildren
   '/conn/$connectionId/$branch/$schemaHash/': typeof ConnConnectionIdBranchSchemaHashIndexRoute
+  '/conn/$connectionId/$branch/$schemaHash/live-query/': typeof ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/': typeof ConnConnectionIdBranchSchemaHashTablesIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit': typeof ConnConnectionIdBranchSchemaHashTablesTableNameEditRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/': typeof ConnConnectionIdBranchSchemaHashTablesTableNameIndexRoute
@@ -88,6 +104,7 @@ export interface FileRoutesByTo {
   '/conn/$connectionId': typeof ConnConnectionIdIndexRoute
   '/conn/$connectionId/$branch': typeof ConnConnectionIdBranchIndexRoute
   '/conn/$connectionId/$branch/$schemaHash': typeof ConnConnectionIdBranchSchemaHashIndexRoute
+  '/conn/$connectionId/$branch/$schemaHash/live-query': typeof ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables': typeof ConnConnectionIdBranchSchemaHashTablesIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit': typeof ConnConnectionIdBranchSchemaHashTablesTableNameEditRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName': typeof ConnConnectionIdBranchSchemaHashTablesTableNameIndexRoute
@@ -98,8 +115,10 @@ export interface FileRoutesById {
   '/conn/new': typeof ConnNewRoute
   '/conn/$connectionId/': typeof ConnConnectionIdIndexRoute
   '/conn/$connectionId/$branch/': typeof ConnConnectionIdBranchIndexRoute
+  '/conn/$connectionId/$branch/$schemaHash/live-query': typeof ConnConnectionIdBranchSchemaHashLiveQueryRouteWithChildren
   '/conn/$connectionId/$branch/$schemaHash/tables': typeof ConnConnectionIdBranchSchemaHashTablesRouteWithChildren
   '/conn/$connectionId/$branch/$schemaHash/': typeof ConnConnectionIdBranchSchemaHashIndexRoute
+  '/conn/$connectionId/$branch/$schemaHash/live-query/': typeof ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/': typeof ConnConnectionIdBranchSchemaHashTablesIndexRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit': typeof ConnConnectionIdBranchSchemaHashTablesTableNameEditRoute
   '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/': typeof ConnConnectionIdBranchSchemaHashTablesTableNameIndexRoute
@@ -111,8 +130,10 @@ export interface FileRouteTypes {
     | '/conn/new'
     | '/conn/$connectionId/'
     | '/conn/$connectionId/$branch/'
+    | '/conn/$connectionId/$branch/$schemaHash/live-query'
     | '/conn/$connectionId/$branch/$schemaHash/tables'
     | '/conn/$connectionId/$branch/$schemaHash/'
+    | '/conn/$connectionId/$branch/$schemaHash/live-query/'
     | '/conn/$connectionId/$branch/$schemaHash/tables/'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/'
@@ -123,6 +144,7 @@ export interface FileRouteTypes {
     | '/conn/$connectionId'
     | '/conn/$connectionId/$branch'
     | '/conn/$connectionId/$branch/$schemaHash'
+    | '/conn/$connectionId/$branch/$schemaHash/live-query'
     | '/conn/$connectionId/$branch/$schemaHash/tables'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName'
@@ -132,8 +154,10 @@ export interface FileRouteTypes {
     | '/conn/new'
     | '/conn/$connectionId/'
     | '/conn/$connectionId/$branch/'
+    | '/conn/$connectionId/$branch/$schemaHash/live-query'
     | '/conn/$connectionId/$branch/$schemaHash/tables'
     | '/conn/$connectionId/$branch/$schemaHash/'
+    | '/conn/$connectionId/$branch/$schemaHash/live-query/'
     | '/conn/$connectionId/$branch/$schemaHash/tables/'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit'
     | '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/'
@@ -187,12 +211,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnConnectionIdBranchSchemaHashTablesRouteImport
       parentRoute: typeof ConnRoute
     }
+    '/conn/$connectionId/$branch/$schemaHash/live-query': {
+      id: '/conn/$connectionId/$branch/$schemaHash/live-query'
+      path: '/$connectionId/$branch/$schemaHash/live-query'
+      fullPath: '/conn/$connectionId/$branch/$schemaHash/live-query'
+      preLoaderRoute: typeof ConnConnectionIdBranchSchemaHashLiveQueryRouteImport
+      parentRoute: typeof ConnRoute
+    }
     '/conn/$connectionId/$branch/$schemaHash/tables/': {
       id: '/conn/$connectionId/$branch/$schemaHash/tables/'
       path: '/'
       fullPath: '/conn/$connectionId/$branch/$schemaHash/tables/'
       preLoaderRoute: typeof ConnConnectionIdBranchSchemaHashTablesIndexRouteImport
       parentRoute: typeof ConnConnectionIdBranchSchemaHashTablesRoute
+    }
+    '/conn/$connectionId/$branch/$schemaHash/live-query/': {
+      id: '/conn/$connectionId/$branch/$schemaHash/live-query/'
+      path: '/'
+      fullPath: '/conn/$connectionId/$branch/$schemaHash/live-query/'
+      preLoaderRoute: typeof ConnConnectionIdBranchSchemaHashLiveQueryIndexRouteImport
+      parentRoute: typeof ConnConnectionIdBranchSchemaHashLiveQueryRoute
     }
     '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/': {
       id: '/conn/$connectionId/$branch/$schemaHash/tables/$tableName/'
@@ -210,6 +248,21 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface ConnConnectionIdBranchSchemaHashLiveQueryRouteChildren {
+  ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute: typeof ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute
+}
+
+const ConnConnectionIdBranchSchemaHashLiveQueryRouteChildren: ConnConnectionIdBranchSchemaHashLiveQueryRouteChildren =
+  {
+    ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute:
+      ConnConnectionIdBranchSchemaHashLiveQueryIndexRoute,
+  }
+
+const ConnConnectionIdBranchSchemaHashLiveQueryRouteWithChildren =
+  ConnConnectionIdBranchSchemaHashLiveQueryRoute._addFileChildren(
+    ConnConnectionIdBranchSchemaHashLiveQueryRouteChildren,
+  )
 
 interface ConnConnectionIdBranchSchemaHashTablesRouteChildren {
   ConnConnectionIdBranchSchemaHashTablesIndexRoute: typeof ConnConnectionIdBranchSchemaHashTablesIndexRoute
@@ -236,6 +289,7 @@ interface ConnRouteChildren {
   ConnNewRoute: typeof ConnNewRoute
   ConnConnectionIdIndexRoute: typeof ConnConnectionIdIndexRoute
   ConnConnectionIdBranchIndexRoute: typeof ConnConnectionIdBranchIndexRoute
+  ConnConnectionIdBranchSchemaHashLiveQueryRoute: typeof ConnConnectionIdBranchSchemaHashLiveQueryRouteWithChildren
   ConnConnectionIdBranchSchemaHashTablesRoute: typeof ConnConnectionIdBranchSchemaHashTablesRouteWithChildren
   ConnConnectionIdBranchSchemaHashIndexRoute: typeof ConnConnectionIdBranchSchemaHashIndexRoute
 }
@@ -244,6 +298,8 @@ const ConnRouteChildren: ConnRouteChildren = {
   ConnNewRoute: ConnNewRoute,
   ConnConnectionIdIndexRoute: ConnConnectionIdIndexRoute,
   ConnConnectionIdBranchIndexRoute: ConnConnectionIdBranchIndexRoute,
+  ConnConnectionIdBranchSchemaHashLiveQueryRoute:
+    ConnConnectionIdBranchSchemaHashLiveQueryRouteWithChildren,
   ConnConnectionIdBranchSchemaHashTablesRoute:
     ConnConnectionIdBranchSchemaHashTablesRouteWithChildren,
   ConnConnectionIdBranchSchemaHashIndexRoute:

@@ -10,12 +10,27 @@ import { inspectorRailWidthClassName } from "#/layout/inspectorShell";
 import { appRoutes } from "@/lib/navigation/appRoutes";
 
 interface RailItem {
-  disabled?: boolean;
   icon: React.ComponentType<{ className?: string }>;
   id: string;
-  isActive: (pathname: string, tablesPathname: string | null) => boolean;
+  isActive: (pathname: string, schemaPathname: string | null, tablesPathname: string | null) => boolean;
   title: string;
-  to?: typeof appRoutes.tables;
+  to?: typeof appRoutes.tables | typeof appRoutes.liveQuery;
+}
+
+function getSchemaPathname(
+  schemaParams:
+    | {
+        branch: string;
+        connectionId: string;
+        schemaHash: string;
+      }
+    | undefined,
+): string | null {
+  if (schemaParams === undefined) {
+    return null;
+  }
+
+  return `/conn/${schemaParams.connectionId}/${schemaParams.branch}/${schemaParams.schemaHash}`;
 }
 
 function getTablesPathname(
@@ -38,7 +53,7 @@ const railItems: RailItem[] = [
   {
     icon: TableProperties,
     id: "tables",
-    isActive: (pathname, tablesPathname) => {
+    isActive: (pathname, _schemaPathname, tablesPathname) => {
       if (tablesPathname === null) {
         return false;
       }
@@ -49,11 +64,17 @@ const railItems: RailItem[] = [
     to: appRoutes.tables,
   },
   {
-    disabled: true,
     icon: CodeXml,
     id: "live-query",
-    isActive: () => false,
+    isActive: (pathname, schemaPathname) => {
+      if (schemaPathname === null) {
+        return false;
+      }
+
+      return pathname === `${schemaPathname}/live-query` || pathname.startsWith(`${schemaPathname}/live-query/`);
+    },
     title: "Live Query",
+    to: appRoutes.liveQuery,
   },
 ];
 
@@ -70,6 +91,7 @@ export function InspectorRail(): React.ReactElement {
           schemaHash: currentSchemaHash,
         }
       : undefined;
+  const schemaPathname = getSchemaPathname(tablesParams);
   const tablesPathname = getTablesPathname(tablesParams);
 
   return (
@@ -82,8 +104,8 @@ export function InspectorRail(): React.ReactElement {
       <nav aria-label="Inspector navigation" className="flex flex-1 flex-col items-center gap-1 px-1.5 py-2">
         {railItems.map((item) => {
           const Icon = item.icon;
-          const isActive = item.isActive(location.pathname, tablesPathname);
-          const isDisabled = item.disabled === true || (item.to !== undefined && tablesParams === undefined);
+          const isActive = item.isActive(location.pathname, schemaPathname, tablesPathname);
+          const isDisabled = item.to !== undefined && tablesParams === undefined;
 
           if (item.to !== undefined && tablesParams !== undefined && isDisabled === false) {
             return (
