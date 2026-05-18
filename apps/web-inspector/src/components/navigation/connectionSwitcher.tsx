@@ -62,8 +62,8 @@ export function ConnectionSwitcher({
       : "Open Connections");
   const resolvedTriggerClassName =
     triggerClassName !== undefined
-      ? `justify-start rounded-sm ${triggerClassName}`
-      : "justify-start rounded-sm";
+      ? `justify-start rounded-xs ${triggerClassName}`
+      : "justify-start rounded-xs";
 
   const filteredConnections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

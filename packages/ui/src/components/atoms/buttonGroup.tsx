@@ -1,20 +1,62 @@
 import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
+import {
+  ButtonGroup as ShadButtonGroup,
+  ButtonGroupSeparator as ShadButtonGroupSeparator,
+  ButtonGroupText as ShadButtonGroupText,
+} from "@/components/ui/button-group"
 import { cn } from "@/lib/utils"
 
-import { Button, type ButtonProps } from "@/components/atoms/button"
+const buttonGroupVariants = cva(
+  "inline-flex items-stretch overflow-hidden rounded-xs border border-border bg-background",
+  {
+    variants: {
+      size: {
+        sm: "h-6",
+        default: "h-7",
+        lg: "h-8",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
 
-type ButtonGroupProps = React.ComponentProps<"div"> & {
-  fullWidth?: boolean
-}
+const buttonGroupItemVariants = cva(
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-none border-0 border-l border-border bg-background text-muted-foreground shadow-none outline-none transition-colors first:border-l-0 hover:bg-muted/40 hover:text-foreground focus-visible:z-10 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 active:bg-muted/60 disabled:pointer-events-none disabled:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "h-6 w-6 text-[0.625rem] [&_svg:not([class*='size-'])]:size-3",
+        default: "h-7 w-7 text-xs/relaxed [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-8 w-8 text-sm/relaxed [&_svg:not([class*='size-'])]:size-4",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
 
-function ButtonGroup({ className, fullWidth = false, ...props }: ButtonGroupProps) {
+type ButtonGroupProps = React.ComponentProps<typeof ShadButtonGroup> &
+  VariantProps<typeof buttonGroupVariants> & {
+    fullWidth?: boolean
+  }
+
+function ButtonGroup({
+  ref,
+  className,
+  size = "default",
+  fullWidth = false,
+  ...props
+}: ButtonGroupProps) {
   return (
-    <div
-      role="group"
-      data-slot="button-group"
+    <ShadButtonGroup
+      ref={ref}
       className={cn(
-        "inline-flex h-7 items-stretch overflow-hidden rounded-sm border border-border bg-background",
+        buttonGroupVariants({ size }),
         fullWidth === true && "flex w-full",
         className
       )}
@@ -22,36 +64,43 @@ function ButtonGroup({ className, fullWidth = false, ...props }: ButtonGroupProp
     />
   )
 }
+ButtonGroup.displayName = "ButtonGroup"
 
-type ButtonGroupItemProps = ButtonProps & {
+type ButtonGroupItemProps = React.ComponentProps<"button"> & {
   selected?: boolean
   fill?: boolean
-}
+} & VariantProps<typeof buttonGroupItemVariants>
 
 function ButtonGroupItem({
+  ref,
   className,
+  size = "default",
   fill = false,
   selected = false,
   children,
   ...props
 }: ButtonGroupItemProps) {
   return (
-    <Button
+    <button
+      ref={ref}
       type="button"
-      variant="ghost"
-      size="icon"
       aria-pressed={selected}
       data-selected={selected}
       className={cn(
-        "size-7 rounded-none border-0 border-l border-border bg-background px-0 text-muted-foreground shadow-none first:border-l-0 hover:bg-muted/40 hover:text-foreground focus-visible:z-10 data-[selected=true]:text-foreground",
+        buttonGroupItemVariants({ size }),
         fill === true && "h-full flex-1 px-3",
         className
       )}
       {...props}
     >
       {children}
-    </Button>
+    </button>
   )
 }
+ButtonGroupItem.displayName = "ButtonGroupItem"
 
-export { ButtonGroup, ButtonGroupItem }
+const ButtonGroupSeparator = ShadButtonGroupSeparator
+const ButtonGroupText = ShadButtonGroupText
+
+export { ButtonGroup, ButtonGroupItem, ButtonGroupSeparator, ButtonGroupText }
+export default ButtonGroup

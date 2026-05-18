@@ -8,10 +8,10 @@ export function LiveQueryScreen(): React.ReactElement {
     <div className="flex h-full min-h-0 w-full overflow-hidden bg-background">
       <LiveQueryListPane
         isInitialLoading={state.isInitialLoading}
-        searchValue={state.searchValue}
+        listSearchValue={state.listSearchValue}
         selectedTableName={state.selectedTableName}
-        tableItems={state.tableItems}
-        onSearchValueChange={state.setSearchValue}
+        visibleTableItems={state.visibleTableItems}
+        onListSearchValueChange={state.setListSearchValue}
         onSelectedTableNameChange={state.setSelectedTableName}
       />
       <LiveQueryGrid state={state} />

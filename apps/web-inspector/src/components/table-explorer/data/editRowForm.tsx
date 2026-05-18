@@ -3,8 +3,10 @@ import { useState } from "react";
 import type { ColumnDescriptor } from "jazz-tools";
 
 import { Button } from "@regarde/ui/button";
+import { EmptyState } from "@regarde/ui/emptyState";
+import { cn } from "@regarde/ui/lib/utils";
 
-import { useRowEditorFields } from "@/components/table-explorer/data/rowEditorFields";
+import { RowEditorFields, useRowEditorFields } from "@/components/table-explorer/data/rowEditorFields";
 
 interface EditRowFormProps {
   onCancel?: () => void;
@@ -24,39 +26,43 @@ export function EditRowForm({
   targetRowId,
 }: EditRowFormProps): React.ReactElement {
   const [isDeleting, setIsDeleting] = useState(false);
-  const { fields, isSaving, saveError, submit } = useRowEditorFields({
+  const rowEditor = useRowEditorFields({
     initialRowValues: rowValues ?? {},
     mode: "edit",
     onSubmit: onSave,
     schemaColumns,
-    showIdField: false,
   });
 
   if (rowValues === null) {
-    return (
-      <div className="flex h-full min-h-0 flex-col gap-2">
-        <p className="text-sm text-muted-foreground">Select a row to edit it.</p>
-      </div>
-    );
+    return <EmptyState title="Select a row" description="Select a row from the data grid to edit it." />;
   }
 
   return (
-    <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
+    <form className="flex h-full min-h-0 flex-col mt-2 overflow-hidden" onSubmit={rowEditor.submit}>
       <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 mb-2 overflow-auto">
-        <p className="text-sm text-muted-foreground">{targetRowId}</p>
+        <p className="text-sm text-muted-foreground">Id: {targetRowId}</p>
 
-        {fields}
+        <RowEditorFields
+          errors={rowEditor.errors}
+          fieldStates={rowEditor.fieldStates}
+          formFields={rowEditor.formFields}
+          initialRowValues={rowValues ?? {}}
+          mode="edit"
+          onFieldNullChange={rowEditor.setFieldNull}
+          onFieldTextChange={rowEditor.setFieldText}
+          showIdField={false}
+        />
 
-        {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
+        {rowEditor.saveError !== null ? <p className="text-sm text-destructive">{rowEditor.saveError}</p> : null}
       </div>
 
-      <div className="flex shrink-0 items-center justify-between gap-2 px-2 border-t border-border bg-background py-3">
+      <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-t border-border bg-background px-3">
         {onDelete !== undefined ? (
           <Button
             type="button"
             variant="destructive"
             size="sm"
-            disabled={isDeleting === true || isSaving === true}
+            disabled={isDeleting === true || rowEditor.isSaving === true}
             onClick={async () => {
               try {
                 setIsDeleting(true);
@@ -68,14 +74,14 @@ export function EditRowForm({
           >
             {isDeleting === true ? "Deleting..." : "Delete"}
           </Button>
-        ) : <div />}
-        <div className="flex items-center gap-2">
+        ) : null}
+        <div className={cn("flex items-center gap-2", onDelete === undefined && "ml-auto")}>
           {onCancel !== undefined ? (
-            <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isSaving === true}>
+            <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={rowEditor.isSaving === true}>
               Cancel
             </Button>
           ) : null}
-          <Button type="submit" variant="secondary" size="sm" loading={isSaving === true}>
+          <Button type="submit" variant="secondary" size="sm" loading={rowEditor.isSaving === true}>
             Save
           </Button>
         </div>

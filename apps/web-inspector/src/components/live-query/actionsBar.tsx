@@ -1,5 +1,6 @@
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
+import { Badge } from "@regarde/ui/badge";
 import { Button } from "@regarde/ui/button";
 import { SidePanel } from "@regarde/ui/sidePanel";
 
@@ -42,9 +43,13 @@ export function ActionsBar({
           <span className="sr-only">Toggle live query table list</span>
         </Button>
       </div>
-      <div className="text-right text-xs text-muted-foreground">
+      <div className="flex flex-col items-end gap-1 text-xs text-muted-foreground">
         <p>{statusText}</p>
-        {error !== null && hasRows === true ? <p>{error}</p> : null}
+        {error !== null && hasRows === true ? (
+          <Badge variant="destructive" size="sm">
+            {error}
+          </Badge>
+        ) : null}
       </div>
     </div>
   );

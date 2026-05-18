@@ -24,14 +24,14 @@ export function DetailPane({
         widthClassName={inspectorDetailPaneWidthClassName}
         className="bg-background"
       >
-        <SidePanel.Header className="border-l border-border bg-background">
+        <SidePanel.Header className="h-10 border-b border-l border-border bg-background px-3">
           <SidePanel.Title className="flex min-w-0 flex-1 items-center">{title}</SidePanel.Title>
         </SidePanel.Header>
         <SidePanel.Content className="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden border-l border-border bg-background p-0">
           {children}
         </SidePanel.Content>
         {footer !== undefined ? (
-          <SidePanel.Footer className="border-l border-border bg-background">{footer}</SidePanel.Footer>
+          <SidePanel.Footer className="border-t border-l border-border bg-background px-2 py-2">{footer}</SidePanel.Footer>
         ) : null}
       </SidePanel>
     </SidePanel.Provider>

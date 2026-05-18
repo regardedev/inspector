@@ -1,3 +1,4 @@
+// creates TanStack `Table` instance
 import { useMemo } from "react";
 
 import {

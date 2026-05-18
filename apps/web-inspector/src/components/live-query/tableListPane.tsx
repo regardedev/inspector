@@ -1,49 +1,53 @@
 import { Input } from "@regarde/ui/input";
 import { Badge } from "@regarde/ui/badge";
 import { SidePanel } from "@regarde/ui/sidePanel";
+import { EmptyState } from "@regarde/ui/emptyState";
 import { cn } from "@regarde/ui/lib/utils";
 
-import { EmptyState } from "@/components/table-explorer/emptyState";
 import { inspectorListPaneWidthClassName } from "#/layout/inspectorShell";
 import type { LiveQueryTableItem } from "@/types/liveQuery";
 
 interface LiveQueryListPaneProps {
   isInitialLoading: boolean;
-  searchValue: string;
+  listSearchValue: string;
   selectedTableName: string | null;
-  tableItems: LiveQueryTableItem[];
-  onSearchValueChange: (value: string) => void;
+  visibleTableItems: LiveQueryTableItem[];
+  onListSearchValueChange: (value: string) => void;
   onSelectedTableNameChange: (value: string | null) => void;
 }
 
 export function LiveQueryListPane({
   isInitialLoading,
-  searchValue,
+  listSearchValue,
   selectedTableName,
-  tableItems,
-  onSearchValueChange,
+  visibleTableItems,
+  onListSearchValueChange,
   onSelectedTableNameChange,
 }: LiveQueryListPaneProps): React.ReactElement {
   const liveQueryListPane = SidePanel.useSidePanel();
-  const shouldShowEmptyState = isInitialLoading === false && tableItems.length === 0;
+  const shouldShowEmptyState = isInitialLoading === false && visibleTableItems.length === 0;
   const emptyStateDescription =
-    searchValue.trim().length === 0 ? "No active server subscriptions found." : "Try a different table search.";
+    listSearchValue.trim().length === 0 ? "No active server subscriptions found." : "Try a different table search.";
 
   return (
     <SidePanel
       side="left"
       widthClassName={inspectorListPaneWidthClassName}
-      className={liveQueryListPane.open === true ? "border-r border-border bg-background" : "border-r border-transparent bg-background"}
+      className={cn(
+        "border-r bg-background",
+        liveQueryListPane.open === true ? "border-border" : "border-none",
+      )}
     >
-      <div className={cn("flex h-full min-h-0 flex-col bg-background", inspectorListPaneWidthClassName)}>
+      <div className="flex h-full min-h-0 flex-col">
         <div className="border-b border-border px-1 py-1">
           <Input
-            value={searchValue}
+            value={listSearchValue}
             onChange={(event) => {
-              onSearchValueChange(event.currentTarget.value);
+              onListSearchValueChange(event.currentTarget.value);
             }}
             placeholder="Search tables..."
-            className="h-8 border-none bg-transparent text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
+            variant="ghost"
+            className="h-8 text-base"
           />
         </div>
         <div className="min-h-0 flex-1 overflow-auto p-2">
@@ -54,7 +58,7 @@ export function LiveQueryListPane({
                 onSelectedTableNameChange(null);
               }}
               className={cn(
-                "flex min-h-8 items-center justify-between gap-2 rounded-xs px-3 text-sm text-foreground",
+                "flex min-h-8 items-center justify-between rounded-xs px-3 text-sm text-foreground",
                 selectedTableName === null ? "bg-muted" : "hover:bg-muted/60",
               )}
             >
@@ -63,7 +67,7 @@ export function LiveQueryListPane({
             {isInitialLoading === true ? null : shouldShowEmptyState === true ? (
               <EmptyState title="No tables found" description={emptyStateDescription} />
             ) : (
-              tableItems.map((tableItem) => {
+              visibleTableItems.map((tableItem) => {
                 const isActive = selectedTableName === tableItem.tableName;
 
                 return (
@@ -74,7 +78,7 @@ export function LiveQueryListPane({
                       onSelectedTableNameChange(tableItem.tableName);
                     }}
                     className={cn(
-                      "flex min-h-8 items-center justify-between gap-2 rounded-xs px-3 text-sm text-foreground",
+                      "flex min-h-8 items-center justify-between rounded-xs px-3 text-sm text-foreground",
                       isActive === true ? "bg-muted" : "hover:bg-muted/60",
                     )}
                   >

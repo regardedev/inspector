@@ -2,6 +2,7 @@ import type { Table } from "@tanstack/react-table";
 import type { DynamicTableRow } from "jazz-tools";
 
 import { Button } from "@regarde/ui/button";
+import { Checkbox } from "@regarde/ui/checkbox";
 import { DataGridColumnVisibility } from "@regarde/ui/dataGrid";
 
 interface DataGridToolbarProps {
@@ -21,11 +22,10 @@ export function DataGridToolbar({
     <>
       {showInfiniteScrollToggle === true ? (
         <label className="flex items-center gap-2 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={infiniteScrollEnabled}
-            onChange={(event) => {
-              onInfiniteScrollEnabledChange?.(event.currentTarget.checked);
+            onCheckedChange={(checked) => {
+              onInfiniteScrollEnabledChange?.(checked);
             }}
           />
           Infinite scroll

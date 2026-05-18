@@ -1,5 +1,6 @@
+import { EmptyState } from "@regarde/ui/emptyState";
+
 import { DataView } from "@/components/table-explorer/data/view";
-import { EmptyState } from "@/components/table-explorer/emptyState";
 import { SchemaView } from "@/components/table-explorer/schema/view";
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { useTableExplorerSearchParams } from "@/hooks/useTableExplorerSearchParams";

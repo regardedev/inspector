@@ -1,16 +1,35 @@
 import * as React from "react"
 import { Input as ShadInput } from "@/components/ui/input"
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-export type InputProps = React.ComponentProps<typeof ShadInput> & {
-  preSlot?: React.ReactNode
-  postSlot?: React.ReactNode
-}
+const inputVariants = cva(
+  "text-foreground rounded-xs focus-visible:ring-0 focus:z-10",
+  {
+    variants: {
+      variant: {
+        default: "bg-input border-border",
+        ghost:
+          "border-none bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+export type InputProps = React.ComponentProps<typeof ShadInput> &
+  VariantProps<typeof inputVariants> & {
+    preSlot?: React.ReactNode
+    postSlot?: React.ReactNode
+  }
 
 function Input({
   ref,
   preSlot,
   postSlot,
+  variant = "default",
   className,
   ...props
 }: InputProps) {
@@ -24,8 +43,7 @@ function Input({
       <ShadInput
         ref={ref}
         className={cn(
-          "bg-input border-border text-foreground rounded-sm focus-visible:ring-0",
-          "focus:z-10",
+          inputVariants({ variant }),
           preSlot && "pl-9",
           postSlot && "pr-9",
           className

@@ -29,13 +29,13 @@ function getEmptyStateCopy(selectedTableName: string | null): {
   if (selectedTableName !== null) {
     return {
       title: `No active subscriptions for ${selectedTableName}`,
-      description: "Select another table or wait for a Jazz query to mount.",
+      description: "This table currently has no tracked server subscriptions.",
     };
   }
 
   return {
-    title: "No active subscriptions yet",
-    description: "Subscriptions appear here after a Jazz query mounts and the server starts tracking it.",
+    title: "No active subscriptions",
+    description: "Subscriptions appear here after a Jazz query mounts.",
   };
 }
 
@@ -47,7 +47,7 @@ function GridMessage({ description, title }: { description: string; title: strin
   return (
     <div className="flex min-h-0 flex-1 items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-default font-medium text-foreground">{title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
@@ -69,7 +69,7 @@ const columns: ColumnDef<LiveQueryRow>[] = [
             event.stopPropagation();
             row.toggleExpanded();
           }}
-          className="inline-flex size-6 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="inline-flex size-6 items-center justify-center rounded-xs text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label={row.getIsExpanded() === true ? "Collapse query row" : "Expand query row"}
         >
           <Icon className="size-4" />
@@ -137,24 +137,23 @@ export function LiveQueryGrid({ state }: LiveQueryGridProps): React.ReactElement
       ) : state.filteredRows.length === 0 ? (
         <GridMessage title={emptyStateCopy.title} description={emptyStateCopy.description} />
       ) : (
-        <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
-          <DataGrid
-            table={table}
-            recordCount={state.filteredRows.length}
-            emptyMessage="No active subscriptions"
-            tableLayout={{
-              headerSticky: true,
-              width: "auto",
-            }}
-            className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
-          >
-            <DataGridContainer className="flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-none border-0">
-              <DataGridScrollArea className="app-scrollbar h-full min-h-0 min-w-0 w-full flex-1 overflow-hidden" orientation="both">
-                <DataGridTable />
-              </DataGridScrollArea>
-            </DataGridContainer>
-          </DataGrid>
-        </div>
+        <DataGrid
+          table={table}
+          recordCount={state.filteredRows.length}
+          emptyMessage="No active subscriptions"
+          tableLayout={{
+            headerSticky: true,
+            width: "auto",
+            cellBorder: true,
+          }}
+          className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
+        >
+          <DataGridContainer className="rounded-none border-0">
+            <DataGridScrollArea orientation="both">
+              <DataGridTable />
+            </DataGridScrollArea>
+          </DataGridContainer>
+        </DataGrid>
       )}
     </div>
   );

@@ -42,8 +42,8 @@ export function BranchSwitcher({
   }, [query, rememberedBranches]);
   const resolvedTriggerClassName =
     triggerClassName !== undefined
-      ? `justify-start gap-2 rounded-sm ${triggerClassName}`
-      : "justify-start gap-2 rounded-sm";
+      ? `justify-start gap-2 rounded-xs ${triggerClassName}`
+      : "justify-start gap-2 rounded-xs";
 
   return (
     <Combobox<string>

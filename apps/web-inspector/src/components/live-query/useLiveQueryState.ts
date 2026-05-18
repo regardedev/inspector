@@ -9,17 +9,17 @@ export interface UseLiveQueryStateResult {
   generatedAt: number | null;
   isInitialLoading: boolean;
   isRefreshing: boolean;
+  listSearchValue: string;
   rows: LiveQueryRow[];
-  searchValue: string;
   selectedTableName: string | null;
-  setSearchValue: (value: string) => void;
+  setListSearchValue: (value: string) => void;
   setSelectedTableName: (value: string | null) => void;
-  tableItems: LiveQueryTableItem[];
+  visibleTableItems: LiveQueryTableItem[];
 }
 
 export function useLiveQueryState(): UseLiveQueryStateResult {
   const telemetry = useLiveQueryTelemetry();
-  const [searchValue, setSearchValue] = useState("");
+  const [listSearchValue, setListSearchValue] = useState("");
   const [selectedTableName, setSelectedTableName] = useState<string | null>(null);
 
   const tableItems = useMemo<LiveQueryTableItem[]>(() => {
@@ -34,7 +34,7 @@ export function useLiveQueryState(): UseLiveQueryStateResult {
       .map(([tableName, subscriptionCount]) => ({ tableName, subscriptionCount }));
   }, [telemetry.rows]);
 
-  const normalizedSearchValue = searchValue.trim().toLowerCase();
+  const normalizedSearchValue = listSearchValue.trim().toLowerCase();
   const visibleTableItems = useMemo(() => {
     if (normalizedSearchValue.length === 0) {
       return tableItems;
@@ -49,25 +49,21 @@ export function useLiveQueryState(): UseLiveQueryStateResult {
         return false;
       }
 
-      if (normalizedSearchValue.length > 0 && row.table.toLowerCase().includes(normalizedSearchValue) === false) {
-        return false;
-      }
-
       return true;
     });
-  }, [normalizedSearchValue, selectedTableName, telemetry.rows]);
+  }, [selectedTableName, telemetry.rows]);
 
   return {
     rows: telemetry.rows,
     filteredRows,
-    tableItems: visibleTableItems,
+    visibleTableItems,
     generatedAt: telemetry.generatedAt,
     error: telemetry.error,
     isInitialLoading: telemetry.isInitialLoading,
     isRefreshing: telemetry.isRefreshing,
-    searchValue,
+    listSearchValue,
     selectedTableName,
-    setSearchValue,
+    setListSearchValue,
     setSelectedTableName,
   };
 }

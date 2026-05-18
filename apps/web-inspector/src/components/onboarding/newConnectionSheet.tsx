@@ -283,7 +283,7 @@ function NewConnectionPanelContent({ prefill }: NewConnectionPanelContentProps):
                     key={schemaHash}
                     type="button"
                     variant="ghost"
-                    className="h-auto justify-start rounded-sm border border-border px-3 py-2 text-left"
+                    className="h-auto justify-start rounded-xs border border-border px-3 py-2 text-left"
                     onClick={() => {
                       void handleSchemaSelect(schemaHash);
                     }}
@@ -339,7 +339,7 @@ function ErrorNotice({ message }: ErrorNoticeProps): React.ReactElement | null {
   }
 
   return (
-    <div className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+    <div className="rounded-xs border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
       {message}
     </div>
   );

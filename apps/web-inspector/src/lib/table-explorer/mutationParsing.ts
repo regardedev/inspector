@@ -132,6 +132,9 @@ export function formatMutationFieldValue(value: unknown): string {
   if (value === null || value === undefined) {
     return "";
   }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
   if (value instanceof Uint8Array) {
     return `(${value.length} bytes)`;
   }

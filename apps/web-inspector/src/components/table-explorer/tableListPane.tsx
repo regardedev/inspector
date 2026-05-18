@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 
 import { Input } from "@regarde/ui/input";
 import { SidePanel } from "@regarde/ui/sidePanel";
+import { EmptyState } from "@regarde/ui/emptyState";
 import { cn } from "@regarde/ui/lib/utils";
 
-import { EmptyState } from "@/components/table-explorer/emptyState";
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { inspectorListPaneWidthClassName } from "#/layout/inspectorShell";
 import { appRoutes } from "@/lib/navigation/appRoutes";
@@ -32,17 +32,21 @@ export function TableListPane({
     <SidePanel
       side="left"
       widthClassName={inspectorListPaneWidthClassName}
-      className={tableListPane.open === true ? "border-r border-border bg-background" : "border-r border-transparent bg-background"}
+      className={cn(
+        "border-r bg-background",
+        tableListPane.open === true ? "border-border" : "border-none",
+      )}
     >
-      <div className={cn("flex h-full min-h-0 flex-col bg-background", inspectorListPaneWidthClassName)}>
-        <div className="border-b border-border px-1 py-1">
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex h-10 shrink-0 items-center border-b border-border px-3">
           <Input
             value={searchValue}
             onChange={(event) => {
               onSearchValueChange(event.currentTarget.value);
             }}
             placeholder="Search tables..."
-            className="h-8 border-none bg-transparent text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
+            variant="ghost"
+            className="h-8 text-base"
           />
         </div>
         <div className="min-h-0 flex-1 overflow-auto p-2">

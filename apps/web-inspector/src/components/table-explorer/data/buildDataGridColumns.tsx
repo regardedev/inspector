@@ -1,6 +1,10 @@
+// Defines `ColumnDef`
 import type { ColumnDef } from "@tanstack/react-table";
 import type { DynamicTableRow } from "jazz-tools";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
+
+import { Checkbox } from "@regarde/ui/checkbox";
+import { CopyPopover } from "@regarde/ui/copyPopover";
 
 import { RelationCellLink } from "@/components/table-explorer/data/relationCellLink";
 import type { TableColumnMeta, TableSortDirection } from "@/types/tableExplorer";
@@ -15,6 +19,9 @@ function formatCellValue(value: unknown): string {
   if (value === null || value === undefined) {
     return "";
   }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
   if (typeof value === "string") {
     return value;
   }
@@ -28,31 +35,33 @@ function formatCellValue(value: unknown): string {
   return String(value);
 }
 
+function formatMiddleTruncated(value: string, maxLength = 22): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+  const sideLength = Math.floor((maxLength - 3) / 2);
+  return value.slice(0, sideLength) + "..." + value.slice(-sideLength);
+}
+
+interface SelectionCheckboxProps {
+  ariaLabel: string;
+  checked: boolean;
+  indeterminate?: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}
+
 function SelectionCheckbox({
   ariaLabel,
   checked,
   indeterminate = false,
   onCheckedChange,
-}: {
-  ariaLabel: string;
-  checked: boolean;
-  indeterminate?: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}): React.ReactElement {
+}: SelectionCheckboxProps): React.ReactElement {
   return (
-    <input
-      type="checkbox"
+    <Checkbox
       aria-label={ariaLabel}
       checked={checked}
-      ref={(element) => {
-        if (element !== null) {
-          element.indeterminate = indeterminate;
-        }
-      }}
-      className="size-4 rounded-sm border border-input"
-      onChange={(event) => {
-        onCheckedChange(event.currentTarget.checked);
-      }}
+      indeterminate={indeterminate}
+      onCheckedChange={onCheckedChange}
     />
   );
 }
@@ -85,11 +94,12 @@ function SortableColumnHeader({
     );
   }
 
+  // TODO: remove default button
   return (
     <div className="flex h-full items-center">
       <button
         type="button"
-        className="inline-flex h-6 items-center gap-1.5 rounded-sm px-0 text-left text-xs/relaxed font-normal text-secondary-foreground/80 outline-hidden transition-colors hover:bg-transparent hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none"
+        className="inline-flex h-6 items-center gap-1.5 rounded-xs px-0 text-left text-xs/relaxed font-normal text-secondary-foreground/80 outline-hidden transition-colors hover:bg-transparent hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none"
         onClick={onToggleSort}
       >
         <span className="truncate">{label}</span>
@@ -109,7 +119,6 @@ export function buildDataGridColumns({
     id: "_select",
     enableHiding: false,
     enableSorting: false,
-    size: 44,
     header: ({ table }) => {
       const loadedRows = table.getRowModel().rows;
       const isAllSelected = loadedRows.length > 0 && loadedRows.every((row) => row.getIsSelected() === true);
@@ -188,16 +197,35 @@ export function buildDataGridColumns({
           return <RelationCellLink relationTable={relationTable} relationId={rawValue} />;
         }
 
+        const displayValue = formatCellValue(rawValue);
+        const columnType = column.column?.column_type.type;
+        const isCopyPopoverColumn =
+          column.id === "id" ||
+          columnType === "Json" ||
+          columnType === "Array" ||
+          columnType === "Timestamp";
+
+        if (isCopyPopoverColumn === true) {
+          return (
+            <CopyPopover text={displayValue}>
+              <span className="block truncate">
+                {column.id === "id" ? formatMiddleTruncated(displayValue) : displayValue}
+              </span>
+            </CopyPopover>
+          );
+        }
+
         return (
-          <span className="block truncate" title={formatCellValue(rawValue)}>
-            {formatCellValue(rawValue)}
+          <span className="block truncate" title={displayValue}>
+            {displayValue}
           </span>
         );
       },
+      // TODO: any way to do better?
       meta: {
         headerTitle: column.label,
-        headerClassName: column.id === "id" ? "min-w-56" : undefined,
-        cellClassName: "max-w-0 truncate",
+        headerClassName: column.id === "id" ? "min-w-40" : undefined,
+        cellClassName: "max-w-40 truncate",
       },
     };
   });

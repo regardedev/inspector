@@ -29,7 +29,7 @@ function useSidePanel(): SidePanelContextValue {
 
 function Header({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("flex h-9 items-center gap-2 px-2 md:bg-background md:border-border md:border-b", className)} {...props}>
+    <div className={cn("flex items-center gap-2", className)} {...props}>
       {children}
     </div>
   )
@@ -37,12 +37,12 @@ function Header({ className, children, ...props }: React.ComponentProps<"div">) 
 Header.displayName = "SidePanelHeader"
 
 function Content({ className, children, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("mt-4 flex-1 min-h-0 p-2", className)} {...props}>{children}</div>
+  return <div className={cn("flex-1 min-h-0", className)} {...props}>{children}</div>
 }
 Content.displayName = "SidePanelContent"
 
 function Footer({ className, children, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("mt-auto flex flex-col gap-2 px-2 py-2 border-t", className)} {...props}>{children}</div>
+  return <div className={cn("mt-auto flex flex-col gap-2", className)} {...props}>{children}</div>
 }
 Footer.displayName = "SidePanelFooter"
 
@@ -91,7 +91,7 @@ function InlinePanel({
   return (
     <div
       className={cn(
-        "flex-col bg-popover h-full overflow-hidden shrink-0",
+        "flex-col h-full overflow-hidden shrink-0",
         "transition-all duration-200 ease-in-out",
         className,
         open === true ? `${widthClassName} opacity-100` : "w-0 opacity-0"
@@ -119,9 +119,8 @@ function DrawerPanel({
       <Drawer.Portal>
         <Drawer.Backdrop className="fixed inset-0 z-50 bg-black/10 data-ending-style:opacity-0" />
         <Drawer.Viewport className="fixed inset-x-0 bottom-0 z-50">
-          <Drawer.Popup className={cn("bg-popover shadow-lg flex flex-col w-full rounded-t-xl border-t max-h-[80vh] data-ending-style:translate-y-full", className)}>
-            <div className="mx-auto mt-4 h-1 w-12 rounded-full bg-muted" />
-            <Drawer.Content className="relative flex flex-col overflow-auto p-4">
+          <Drawer.Popup className={cn("flex flex-col w-full data-ending-style:translate-y-full", className)}>
+            <Drawer.Content className="relative flex flex-col overflow-auto">
               {children}
             </Drawer.Content>
           </Drawer.Popup>

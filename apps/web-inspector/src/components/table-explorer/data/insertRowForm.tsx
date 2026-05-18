@@ -5,7 +5,7 @@ import type { ColumnDescriptor } from "jazz-tools";
 import { Button } from "@regarde/ui/button";
 import { Switch } from "@regarde/ui/switch";
 
-import { useRowEditorFields } from "@/components/table-explorer/data/rowEditorFields";
+import { RowEditorFields, useRowEditorFields } from "@/components/table-explorer/data/rowEditorFields";
 
 interface InsertRowFormProps {
   onCancel?: () => void;
@@ -31,7 +31,7 @@ function InsertRowFormFields({
 }: InsertRowFormFieldsProps): React.ReactElement {
   const insertMoreFieldId = "insert-more";
 
-  const { fields, isSaving, saveError, submit } = useRowEditorFields({
+  const rowEditor = useRowEditorFields({
     initialRowValues: rowValues,
     mode: "insert",
     onSubmit: async (values) => {
@@ -45,13 +45,21 @@ function InsertRowFormFields({
   });
 
   return (
-    <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={submit}>
+    <form className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={rowEditor.submit}>
       <div className="app-scrollbar flex min-h-0 flex-1 flex-col gap-4 px-2 py-2 mb-2 overflow-auto">
-        {fields}
-        {saveError !== null ? <p className="text-sm text-destructive">{saveError}</p> : null}
+        <RowEditorFields
+          errors={rowEditor.errors}
+          fieldStates={rowEditor.fieldStates}
+          formFields={rowEditor.formFields}
+          initialRowValues={rowValues}
+          mode="insert"
+          onFieldNullChange={rowEditor.setFieldNull}
+          onFieldTextChange={rowEditor.setFieldText}
+        />
+        {rowEditor.saveError !== null ? <p className="text-sm text-destructive">{rowEditor.saveError}</p> : null}
       </div>
 
-      <div className="flex shrink-0 items-center justify-between gap-2 px-2 border-t border-border bg-background py-3">
+      <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-t border-border bg-background px-3">
         <label htmlFor={insertMoreFieldId} className="flex items-center gap-2 text-sm text-muted-foreground">
           <Switch
             id={insertMoreFieldId}
@@ -62,17 +70,17 @@ function InsertRowFormFields({
             onCheckedChange={(nextChecked) => {
               onInsertMoreEnabledChange(nextChecked === true);
             }}
-            disabled={isSaving === true}
+            disabled={rowEditor.isSaving === true}
           />
           <span id={`${insertMoreFieldId}-label`}>Insert more</span>
         </label>
         <div className="flex items-center gap-2">
           {onCancel !== undefined ? (
-            <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isSaving === true}>
+            <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={rowEditor.isSaving === true}>
               Cancel
             </Button>
           ) : null}
-          <Button type="submit" variant="secondary" size="sm" loading={isSaving === true}>
+          <Button type="submit" variant="secondary" size="sm" loading={rowEditor.isSaving === true}>
             Insert
           </Button>
         </div>

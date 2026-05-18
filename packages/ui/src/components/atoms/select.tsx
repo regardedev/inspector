@@ -12,17 +12,42 @@ import {
   SelectTrigger as ShadSelectTrigger,
   SelectValue as ShadSelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 const Select = ({ ...props }: React.ComponentProps<typeof ShadSelect>) => <ShadSelect {...props} />
 Select.displayName = "Select"
 
-const SelectContent = ({ ...props }: React.ComponentProps<typeof ShadSelectContent>) => <ShadSelectContent {...props} />
+function SelectContent({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof ShadSelectContent>) {
+  return (
+    <ShadSelectContent
+      ref={ref}
+      className={cn("rounded-xs", className)}
+      {...props}
+    />
+  )
+}
 SelectContent.displayName = "SelectContent"
 
 const SelectGroup = ({ ...props }: React.ComponentProps<typeof ShadSelectGroup>) => <ShadSelectGroup {...props} />
 SelectGroup.displayName = "SelectGroup"
 
-const SelectItem = ({ ...props }: React.ComponentProps<typeof ShadSelectItem>) => <ShadSelectItem {...props} />
+function SelectItem({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof ShadSelectItem>) {
+  return (
+    <ShadSelectItem
+      ref={ref}
+      className={cn("rounded-none", className)}
+      {...props}
+    />
+  )
+}
 SelectItem.displayName = "SelectItem"
 
 const SelectLabel = ({ ...props }: React.ComponentProps<typeof ShadSelectLabel>) => <ShadSelectLabel {...props} />
@@ -37,7 +62,19 @@ SelectScrollUpButton.displayName = "SelectScrollUpButton"
 const SelectSeparator = ({ ...props }: React.ComponentProps<typeof ShadSelectSeparator>) => <ShadSelectSeparator {...props} />
 SelectSeparator.displayName = "SelectSeparator"
 
-const SelectTrigger = ({ ...props }: React.ComponentProps<typeof ShadSelectTrigger>) => <ShadSelectTrigger {...props} />
+function SelectTrigger({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof ShadSelectTrigger>) {
+  return (
+    <ShadSelectTrigger
+      ref={ref}
+      className={cn("rounded-xs", className)}
+      {...props}
+    />
+  )
+}
 SelectTrigger.displayName = "SelectTrigger"
 
 const SelectValue = ({ ...props }: React.ComponentProps<typeof ShadSelectValue>) => <ShadSelectValue {...props} />

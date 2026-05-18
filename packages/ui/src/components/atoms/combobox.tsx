@@ -65,7 +65,7 @@ const ComboboxContent = ({
 }: React.ComponentProps<typeof ShadComboboxContent>) => (
   <ShadComboboxContent
     ref={ref}
-    className={cn("rounded-sm ring-foreground/10", className)}
+    className={cn("rounded-xs ring-foreground/10", className)}
     {...props}
   />
 )
@@ -85,7 +85,7 @@ const ComboboxItem = ({
   className,
   ...props
 }: React.ComponentProps<typeof ShadComboboxItem>) => (
-  <ShadComboboxItem ref={ref} className={cn("cursor-pointer rounded-sm", className)} {...props} />
+  <ShadComboboxItem ref={ref} className={cn("cursor-pointer rounded-xs", className)} {...props} />
 )
 ComboboxItem.displayName = "ComboboxItem"
 

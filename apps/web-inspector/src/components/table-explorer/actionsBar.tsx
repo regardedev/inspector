@@ -22,7 +22,7 @@ export function ActionsBar({
   const tableListPane = SidePanel.useSidePanel();
 
   return (
-    <div className="flex min-h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-3 py-2">
+    <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-3">
       <div className="flex items-center gap-2">
         <Button
           type="button"
@@ -35,8 +35,9 @@ export function ActionsBar({
           {tableListPane.open === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
           <span className="sr-only">Toggle table list</span>
         </Button>
-        <ButtonGroup>
+        <ButtonGroup size="sm">
           <ButtonGroupItem
+            size="sm"
             selected={view === "data"}
             aria-label="Show table data"
             title="Data"
@@ -47,6 +48,7 @@ export function ActionsBar({
             <TableIcon className="size-3.5" />
           </ButtonGroupItem>
           <ButtonGroupItem
+            size="sm"
             selected={view === "schema"}
             aria-label="Show table schema"
             title="Schema"
