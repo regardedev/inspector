@@ -34,7 +34,7 @@ export function useInspectorRuntime({
 
   const clearRuntime = useCallback(() => {
     setClient((currentClient) => {
-      if (currentClient) {
+      if (currentClient !== null) {
         void currentClient.shutdown();
       }
       return null;
@@ -44,7 +44,7 @@ export function useInspectorRuntime({
   }, []);
 
   useEffect(() => {
-    if (!connection || !branch || !schemaHash) {
+    if (connection === null || branch === null || schemaHash === null) {
       clearRuntime();
       setAvailableSchemaHashes([]);
       setError(null);
@@ -53,21 +53,29 @@ export function useInspectorRuntime({
     }
 
     let active = true;
+    let runtimeClient: JazzClient | null = null;
 
     setError(null);
     setIsLoading(true);
 
     const run = async () => {
       try {
-        const [nextClient, { schema }, { hashes }, permissions] = await Promise.all([
-          createJazzClient({
-            appId: connection.appId,
-            serverUrl: connection.serverUrl,
-            env: connection.env,
-            userBranch: branch,
-            adminSecret: connection.adminSecret,
-            driver: { type: "memory" },
-          }),
+        runtimeClient = await createJazzClient({
+          appId: connection.appId,
+          serverUrl: connection.serverUrl,
+          env: connection.env,
+          userBranch: branch,
+          adminSecret: connection.adminSecret,
+          driver: { type: "memory" },
+        });
+
+        if (active === false) {
+          void runtimeClient.shutdown();
+          runtimeClient = null;
+          return;
+        }
+
+        const [{ schema }, { hashes }, permissions] = await Promise.all([
           fetchStoredWasmSchema(connection.serverUrl, {
             appId: connection.appId,
             adminSecret: connection.adminSecret,
@@ -83,13 +91,18 @@ export function useInspectorRuntime({
           }).catch(() => null),
         ]);
 
-        if (!active) {
-          void nextClient.shutdown();
+        if (active === false) {
+          if (runtimeClient !== null) {
+            void runtimeClient.shutdown();
+            runtimeClient = null;
+          }
           return;
         }
 
+        const nextClient = runtimeClient;
+
         setClient((currentClient) => {
-          if (currentClient) {
+          if (currentClient !== null) {
             void currentClient.shutdown();
           }
           return nextClient;
@@ -99,7 +112,12 @@ export function useInspectorRuntime({
         setAvailableSchemaHashes(hashes);
         setIsLoading(false);
       } catch (runtimeError) {
-        if (!active) {
+        if (runtimeClient !== null) {
+          void runtimeClient.shutdown();
+          runtimeClient = null;
+        }
+
+        if (active === false) {
           return;
         }
 
@@ -113,6 +131,12 @@ export function useInspectorRuntime({
 
     return () => {
       active = false;
+      if (runtimeClient !== null) {
+        const clientToShutdown = runtimeClient;
+        runtimeClient = null;
+        void clientToShutdown.shutdown();
+        setClient((currentClient) => (currentClient === clientToShutdown ? null : currentClient));
+      }
     };
   }, [branch, clearRuntime, connection, schemaHash]);
 

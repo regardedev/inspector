@@ -11,8 +11,10 @@ export type TableSortDirection = "asc" | "desc";
 export type TableRowId = string;
 
 export interface TableExplorerSearchState {
+  editorMode: DetailPaneMode | null;
   view: TableExplorerView;
   filters: TableFilterClause[];
+  rowId: TableRowId | null;
   sortColumn: string;
   sortDirection: TableSortDirection;
 }

@@ -45,8 +45,7 @@ export function parseMutationFieldValue(columnType: ColumnType, valueText: strin
       }
       return parsedValue;
     }
-    case "Integer":
-    case "BigInt": {
+    case "Integer": {
       if (trimmedValue.length === 0) {
         throw new Error("Value is required.");
       }
@@ -55,6 +54,17 @@ export function parseMutationFieldValue(columnType: ColumnType, valueText: strin
         throw new Error("Value must be an integer.");
       }
       return parsedValue;
+    }
+    case "BigInt": {
+      if (trimmedValue.length === 0) {
+        throw new Error("Value is required.");
+      }
+      try {
+        BigInt(trimmedValue);
+        return trimmedValue;
+      } catch {
+        throw new Error("Value must be an integer.");
+      }
     }
     case "Double": {
       if (trimmedValue.length === 0) {

@@ -1,4 +1,5 @@
 import type { TableFilterClause } from "@/types/tableFilters";
+import { appRoutes } from "@/lib/navigation/appRoutes";
 
 function buildRelationFilterClause(relationId: string): TableFilterClause {
   return {
@@ -9,16 +10,24 @@ function buildRelationFilterClause(relationId: string): TableFilterClause {
   };
 }
 
-export function buildRelationTableHref(input: {
+export function buildRelationTableLink(input: {
   connectionId: string;
   branch: string;
   schemaHash: string;
   tableName: string;
   relationId: string;
-}): string {
-  const searchParams = new URLSearchParams();
-  searchParams.set("filters", JSON.stringify([buildRelationFilterClause(input.relationId)]));
-  searchParams.set("view", "data");
-
-  return `/conn/${input.connectionId}/${input.branch}/${input.schemaHash}/tables/${input.tableName}?${searchParams.toString()}`;
+}) {
+  return {
+    to: appRoutes.table,
+    params: {
+      connectionId: input.connectionId,
+      branch: input.branch,
+      schemaHash: input.schemaHash,
+      tableName: input.tableName,
+    },
+    search: {
+      filters: JSON.stringify([buildRelationFilterClause(input.relationId)]),
+      view: "data",
+    },
+  } as const;
 }

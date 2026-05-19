@@ -59,11 +59,11 @@ export function ConnectionSwitcher({
     triggerLabel ??
     (activeConnection !== null && activeConnection.id === currentConnectionId
       ? getConnectionDisplayName(activeConnection)
-      : "Open Connections");
+      : "Open connections");
   const resolvedTriggerClassName =
     triggerClassName !== undefined
-      ? `justify-start rounded-xs ${triggerClassName}`
-      : "justify-start rounded-xs";
+      ? `justify-start gap-2 rounded-xs ${triggerClassName}`
+      : "justify-start gap-2 rounded-xs";
 
   const filteredConnections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -97,11 +97,11 @@ export function ConnectionSwitcher({
           className={resolvedTriggerClassName}
           render={<ComboboxTrigger />}
         >
-          {resolvedTriggerLabel}
+          <span className="truncate">{resolvedTriggerLabel}</span>
         </Button>
       </div>
-      <ComboboxContent anchor={anchorRef} className={contentClassName ?? "w-90 p-0"}>
-        <div className="sticky top-0 z-20 bg-popover p-1">
+      <ComboboxContent anchor={anchorRef} className={contentClassName ?? "w-[320px] p-0"}>
+        <div className="sticky top-0 z-10 bg-popover p-1">
           <ComboboxInput
             value={query}
             onChange={(event) => {
@@ -163,7 +163,7 @@ export function ConnectionSwitcher({
               void navigate({ to: appRoutes.newConnection });
             }}
           >
-            Add New Connection
+            Add new connection
           </Button>
         </div>
       </ComboboxContent>

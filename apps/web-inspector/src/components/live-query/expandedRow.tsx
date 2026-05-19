@@ -4,7 +4,7 @@ import { Button } from "@regarde/ui/button";
 import { CopyButton } from "@regarde/ui/copyButton";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
-import { buildExplorerUrl } from "@/lib/live-query/buildExplorerUrl";
+import { buildExplorerLink } from "@/lib/live-query/buildExplorerUrl";
 import type { LiveQueryRow } from "@/types/liveQuery";
 
 function formatQuery(value: string): string {
@@ -24,9 +24,9 @@ export function LiveQueryExpandedRow({ row }: LiveQueryExpandedRowProps): React.
 
   const formattedQuery = formatQuery(row.query);
 
-  const explorerUrl =
+  const explorerLink =
     currentConnectionId !== null && currentBranch !== null && currentSchemaHash !== null
-      ? buildExplorerUrl({
+      ? buildExplorerLink({
           connectionId: currentConnectionId,
           branch: currentBranch,
           schemaHash: currentSchemaHash,
@@ -43,8 +43,8 @@ export function LiveQueryExpandedRow({ row }: LiveQueryExpandedRowProps): React.
           <p className="text-xs text-muted-foreground">Grouped server subscription for `{row.table}`.</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-1">
-          {explorerUrl !== null ? (
-            <Button size="lg" variant="secondary" render={<Link to={explorerUrl} />}>
+          {explorerLink !== null ? (
+            <Button size="lg" variant="secondary" render={<Link {...explorerLink} />}>
               Open in table explorer
             </Button>
           ) : null}

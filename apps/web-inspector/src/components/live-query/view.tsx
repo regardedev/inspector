@@ -51,7 +51,7 @@ export function LiveQueryScreen(): React.ReactElement {
           onSelectedTableNameChange={state.setSelectedTableName}
         />
       </ResizablePanel>
-      <ResizableSeparator />
+      {isListPaneOpen === true ? <ResizableSeparator /> : null}
       <ResizablePanel className="min-w-0 overflow-hidden">
         <LiveQueryGrid state={state} isListPaneOpen={isListPaneOpen} onToggleListPane={handleToggleListPane} />
       </ResizablePanel>

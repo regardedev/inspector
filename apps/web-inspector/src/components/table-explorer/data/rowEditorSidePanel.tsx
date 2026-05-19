@@ -1,5 +1,3 @@
-// TODO: standardize this `ColumnDescriptor`
-import type { ColumnDescriptor } from "jazz-tools";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 import { Button } from "@regarde/ui/button";
@@ -8,16 +6,12 @@ import { DetailPane } from "@/components/table-explorer/detailPane";
 import type { TableRowId } from "@/types/tableExplorer";
 
 interface RowEditorSidePanelProps {
-  activeRowId: TableRowId | null;
   activeRowIndex: number;
   children: React.ReactNode;
   editedRowIds: TableRowId[];
   mode: "insert" | "edit";
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
-  rowValues: Record<string, unknown> | null;
-  schemaColumns: ColumnDescriptor[];
-  tableName: string;
 }
 
 export function RowEditorSidePanel({

@@ -7,5 +7,4 @@ export const appRoutes = {
   tables: "/conn/$connectionId/$branch/$schemaHash/tables",
   liveQuery: "/conn/$connectionId/$branch/$schemaHash/live-query",
   table: "/conn/$connectionId/$branch/$schemaHash/tables/$tableName",
-  editTable: "/conn/$connectionId/$branch/$schemaHash/tables/$tableName/edit",
 } as const;

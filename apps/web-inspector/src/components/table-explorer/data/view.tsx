@@ -11,10 +11,9 @@ import { InsertRowForm } from "@/components/table-explorer/data/insertRowForm";
 import { RowEditorSidePanel } from "@/components/table-explorer/data/rowEditorSidePanel";
 import { TableFilter } from "@/components/table-explorer/data/tableFilter";
 import { useDataViewState } from "@/components/table-explorer/data/useDataViewState";
-import type { DetailPaneMode, TableExplorerView } from "@/types/tableExplorer";
+import type { TableExplorerView } from "@/types/tableExplorer";
 
 interface DataViewProps {
-  forcedDetailPaneMode?: DetailPaneMode | null;
   isListPaneOpen: boolean;
   onToggleListPane: () => void;
   onViewChange: (view: TableExplorerView) => Promise<void>;
@@ -23,7 +22,6 @@ interface DataViewProps {
 }
 
 export function DataView({
-  forcedDetailPaneMode = null,
   isListPaneOpen,
   onToggleListPane,
   onViewChange,
@@ -32,7 +30,6 @@ export function DataView({
 }: DataViewProps): React.ReactElement {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const state = useDataViewState({
-    forcedDetailPaneMode,
     tableName,
   });
 
@@ -100,10 +97,6 @@ export function DataView({
               mode={state.rowEditor.mode === "insert" ? "insert" : "edit"}
               editedRowIds={state.rowEditor.editedRowIds}
               activeRowIndex={state.rowEditor.activeRowIndex}
-              activeRowId={state.rowEditor.activeRowId}
-              rowValues={state.rowValues}
-              schemaColumns={state.schemaColumns}
-              tableName={tableName}
               onNavigatePrevious={state.rowEditor.goToPreviousRow}
               onNavigateNext={state.rowEditor.goToNextRow}
             >

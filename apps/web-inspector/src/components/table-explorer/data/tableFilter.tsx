@@ -233,12 +233,13 @@ export function TableFilter({
     <div className="shrink-0 border-b border-border bg-background px-3 py-2">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-2">
-          {rows.map((row) => {
+          {rows.map((row, index) => {
             const selectedColumn = filterableColumns.find((column) => column.name === row.column) ?? null;
             const operators = selectedColumn?.operators ?? [];
             const error = parsedRows.errors[row.id] ?? null;
             const usesBooleanSelect = row.operator === "isNull" || selectedColumn?.columnType.type === "Boolean";
             const enumVariants = selectedColumn?.columnType.type === "Enum" ? selectedColumn.columnType.variants : null;
+            const rowLabel = `Filter ${index + 1}`;
 
             return (
               <div key={row.id} className="flex flex-wrap items-start gap-2">
@@ -247,7 +248,7 @@ export function TableFilter({
                   variant="ghost"
                   size="icon-sm"
                   className="mt-0.5"
-                  aria-label="Remove filter"
+                  aria-label={`Remove ${rowLabel.toLowerCase()}`}
                   onClick={() => {
                     removeRow(row.id);
                   }}
@@ -275,7 +276,7 @@ export function TableFilter({
                     });
                   }}
                 >
-                  <SelectTrigger density="lg" className="w-36">
+                  <SelectTrigger density="lg" className="w-36" aria-label={`${rowLabel} column`}>
                     <SelectValue placeholder="column" />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,7 +305,7 @@ export function TableFilter({
                     });
                   }}
                 >
-                  <SelectTrigger density="lg" className="w-36">
+                  <SelectTrigger density="lg" className="w-36" aria-label={`${rowLabel} operator`}>
                     <SelectValue placeholder="operator" />
                   </SelectTrigger>
                   <SelectContent>
@@ -327,7 +328,12 @@ export function TableFilter({
                         updateRow(row.id, { ...row, valueText: nextValue });
                       }}
                     >
-                      <SelectTrigger density="lg" className="w-full" aria-invalid={error !== null}>
+                      <SelectTrigger
+                        density="lg"
+                        className="w-full"
+                        aria-invalid={error !== null}
+                        aria-label={`${rowLabel} value`}
+                      >
                         <SelectValue placeholder="value" />
                       </SelectTrigger>
                       <SelectContent>
@@ -346,7 +352,12 @@ export function TableFilter({
                         updateRow(row.id, { ...row, valueText: nextValue });
                       }}
                     >
-                      <SelectTrigger density="lg" className="w-full" aria-invalid={error !== null}>
+                      <SelectTrigger
+                        density="lg"
+                        className="w-full"
+                        aria-invalid={error !== null}
+                        aria-label={`${rowLabel} value`}
+                      >
                         <SelectValue placeholder="value" />
                       </SelectTrigger>
                       <SelectContent>
@@ -362,6 +373,7 @@ export function TableFilter({
                       value={row.valueText}
                       placeholder="value"
                       aria-invalid={error !== null}
+                      aria-label={`${rowLabel} value`}
                       density="default"
                       onChange={(event) => {
                         updateRow(row.id, { ...row, valueText: event.currentTarget.value });

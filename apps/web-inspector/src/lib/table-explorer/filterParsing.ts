@@ -49,7 +49,6 @@ function parseScalarValue(columnType: ColumnType, value: string): unknown {
       return parsedValue;
     }
     case "Integer":
-    case "BigInt":
     case "Double": {
       const parsedValue = Number(trimmedValue);
       if (Number.isFinite(parsedValue) === false) {
@@ -57,6 +56,14 @@ function parseScalarValue(columnType: ColumnType, value: string): unknown {
       }
 
       return parsedValue;
+    }
+    case "BigInt": {
+      try {
+        BigInt(trimmedValue);
+        return trimmedValue;
+      } catch {
+        throw new Error("Value must be an integer.");
+      }
     }
     case "Bytea":
       return parseBytea(trimmedValue);

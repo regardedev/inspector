@@ -4,17 +4,14 @@ import { DataView } from "@/components/table-explorer/data/view";
 import { SchemaView } from "@/components/table-explorer/schema/view";
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { useTableExplorerSearchParams } from "@/hooks/useTableExplorerSearchParams";
-import type { DetailPaneMode } from "@/types/tableExplorer";
 
 interface SelectedTableViewProps {
-  forcedDetailPaneMode?: DetailPaneMode | null;
   isListPaneOpen: boolean;
   tableName: string | null;
   onToggleListPane: () => void;
 }
 
 export function SelectedTableView({
-  forcedDetailPaneMode = null,
   isListPaneOpen,
   tableName,
   onToggleListPane,
@@ -44,7 +41,6 @@ export function SelectedTableView({
 
   return (
     <DataView
-      forcedDetailPaneMode={forcedDetailPaneMode}
       tableName={tableName}
       view="data"
       isListPaneOpen={isListPaneOpen}

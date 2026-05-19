@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useLiveQueryTelemetry } from "@/hooks/useLiveQueryTelemetry";
 import type { LiveQueryRow, LiveQueryTableItem } from "@/types/liveQuery";
@@ -42,6 +42,17 @@ export function useLiveQueryState(): UseLiveQueryStateResult {
 
     return tableItems.filter((tableItem) => tableItem.tableName.toLowerCase().includes(normalizedSearchValue));
   }, [normalizedSearchValue, tableItems]);
+
+  useEffect(() => {
+    if (selectedTableName === null) {
+      return;
+    }
+
+    const selectedTableExists = tableItems.some((tableItem) => tableItem.tableName === selectedTableName);
+    if (selectedTableExists === false) {
+      setSelectedTableName(null);
+    }
+  }, [selectedTableName, tableItems]);
 
   const filteredRows = useMemo(() => {
     return telemetry.rows.filter((row) => {

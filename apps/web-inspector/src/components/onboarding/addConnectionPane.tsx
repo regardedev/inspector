@@ -45,7 +45,7 @@ function AddConnectionPaneContent({ onClose }: AddConnectionPaneContentProps): R
         showCloseButton={false}
         className="w-[min(100vw,25rem)] max-w-none border-l border-border bg-background p-0 sm:max-w-none"
       >
-        <SheetHeader className="flex h-11 shrink-0 flex-row items-center justify-between border-b border-border px-2 py-2">
+        <SheetHeader className="flex h-11 shrink-0 flex-row items-center justify-between border-b border-border p-3">
           <div className="min-w-0 space-y-0.5">
             <SheetTitle className="rounded-xs px-1 py-1 text-sm leading-[1.4] font-normal text-foreground">
               Add connection
@@ -57,7 +57,7 @@ function AddConnectionPaneContent({ onClose }: AddConnectionPaneContentProps): R
             <span className="sr-only">Close</span>
           </Button>
         </SheetHeader>
-        <div className="flex min-h-0 flex-1 flex-col p-4 text-sm leading-[1.4] text-foreground">
+        <div className="flex min-h-0 flex-1 flex-col p-3 text-sm leading-[1.4] text-foreground">
           {flow.step === "form" ? (
             <AddConnectionForm
               canSubmit={flow.canSubmit}

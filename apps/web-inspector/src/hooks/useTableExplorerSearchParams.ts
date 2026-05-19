@@ -8,20 +8,29 @@ import {
 } from "@/lib/table-explorer/filterParsing";
 import type { TableFilterClause } from "@/types/tableFilters";
 import type {
+  DetailPaneMode,
   TableExplorerSearchState,
   TableExplorerView,
+  TableRowId,
   TableSortDirection,
 } from "@/types/tableExplorer";
 
 interface SearchValues {
   dir?: string;
   filters?: string;
+  mode?: string | null;
+  rowId?: string | null;
   sort?: string;
   view?: string;
 }
 
+interface UpdateSearchOptions {
+  replace?: boolean;
+}
+
 export interface UseTableExplorerSearchParamsResult extends TableExplorerSearchState {
   setFilters: (filters: TableFilterClause[]) => Promise<void>;
+  setRowEditor: (mode: DetailPaneMode | null, rowId?: TableRowId | null, options?: UpdateSearchOptions) => Promise<void>;
   setSorting: (sortColumn: string, sortDirection: TableSortDirection) => Promise<void>;
   setView: (view: TableExplorerView) => Promise<void>;
 }
@@ -34,25 +43,50 @@ function parseSortDirection(value: string | undefined): TableSortDirection {
   return value === "desc" ? "desc" : "asc";
 }
 
+function parseEditorMode(value: string | null | undefined): DetailPaneMode | null {
+  if (value === "edit" || value === "insert") {
+    return value;
+  }
+
+  return null;
+}
+
+function parseRowId(value: string | null | undefined): TableRowId | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+  return trimmedValue.length > 0 ? trimmedValue : null;
+}
+
 export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResult {
   const navigate = useNavigate();
   const search = useSearch({ strict: false }) as SearchValues;
 
   const state = useMemo<TableExplorerSearchState>(() => {
+    const editorMode = parseEditorMode(search.mode);
+    const rowId = parseRowId(search.rowId);
+    const resolvedEditorMode = editorMode === "edit" && rowId === null ? null : editorMode;
+
     return {
-      view: parseView(search.view),
+      editorMode: resolvedEditorMode,
+      view: resolvedEditorMode !== null ? "data" : parseView(search.view),
       filters: parseFiltersFromSearchParam(search.filters ?? null),
+      rowId: resolvedEditorMode === "edit" ? rowId : null,
       sortColumn: search.sort ?? "id",
       sortDirection: parseSortDirection(search.dir),
     };
-  }, [search.dir, search.filters, search.sort, search.view]);
+  }, [search.dir, search.filters, search.mode, search.rowId, search.sort, search.view]);
 
-  const createNextSearch = (updates: Partial<SearchValues>): SearchValues => {
+  const createNextSearch = (baseSearch: SearchValues, updates: Partial<SearchValues>): SearchValues => {
     const nextSearch: SearchValues = {
-      dir: search.dir,
-      filters: search.filters,
-      sort: search.sort,
-      view: search.view,
+      dir: baseSearch.dir,
+      filters: baseSearch.filters,
+      mode: baseSearch.mode,
+      rowId: baseSearch.rowId,
+      sort: baseSearch.sort,
+      view: baseSearch.view,
       ...updates,
     };
 
@@ -68,24 +102,53 @@ export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResu
     if (nextSearch.filters === null || nextSearch.filters === undefined) {
       delete nextSearch.filters;
     }
+    if (nextSearch.mode !== "edit" && nextSearch.mode !== "insert") {
+      delete nextSearch.mode;
+      delete nextSearch.rowId;
+    }
+    if (nextSearch.mode === "insert") {
+      delete nextSearch.rowId;
+    }
+    if (nextSearch.mode === "edit") {
+      const rowId = parseRowId(nextSearch.rowId);
+      if (rowId === null) {
+        delete nextSearch.mode;
+        delete nextSearch.rowId;
+      } else {
+        nextSearch.rowId = rowId;
+      }
+    }
 
     return nextSearch;
   };
 
-  const updateSearch = async (updates: Partial<SearchValues>): Promise<void> => {
+  const updateSearch = async (updates: Partial<SearchValues>, options?: UpdateSearchOptions): Promise<void> => {
     await navigate({
-      replace: true,
-      search: () => createNextSearch(updates),
+      replace: options?.replace ?? true,
+      search: (currentSearch) => createNextSearch(currentSearch as SearchValues, updates),
     });
   };
 
   return {
     ...state,
     setView: async (view) => {
-      await updateSearch({ view });
+      await updateSearch(view === "schema" ? { mode: null, rowId: null, view } : { view });
     },
     setFilters: async (filters) => {
       await updateSearch({ filters: serializeFiltersToSearchParam(filters) ?? undefined });
+    },
+    setRowEditor: async (mode, rowId = null, options) => {
+      if (mode === "edit") {
+        await updateSearch({ mode, rowId }, options);
+        return;
+      }
+
+      if (mode === "insert") {
+        await updateSearch({ mode, rowId: null, view: "data" }, options);
+        return;
+      }
+
+      await updateSearch({ mode: null, rowId: null }, options);
     },
     setSorting: async (sortColumn, sortDirection) => {
       await updateSearch({ sort: sortColumn, dir: sortDirection });

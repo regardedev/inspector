@@ -57,7 +57,7 @@ export function readStoredConnections(): StoredConnectionsStore {
 
   try {
     const raw = localStorage.getItem(CONNECTIONS_STORAGE_KEY);
-    if (!raw) {
+    if (raw === null) {
       return createEmptyConnectionStore();
     }
 
@@ -77,9 +77,9 @@ export function writeStoredConnections(store: StoredConnectionsStore): void {
 }
 
 export function getActiveConnection(store: StoredConnectionsStore): StoredConnection | null {
-  if (store.activeConnectionId) {
+  if (store.activeConnectionId !== null) {
     const activeConnection = store.connections.find((connection) => connection.id === store.activeConnectionId);
-    if (activeConnection) {
+    if (activeConnection !== undefined) {
       return activeConnection;
     }
   }
@@ -91,7 +91,7 @@ export function getConnectionById(
   store: StoredConnectionsStore,
   connectionId: string | null | undefined,
 ): StoredConnection | null {
-  if (!connectionId) {
+  if (connectionId === null || connectionId === undefined || connectionId.length === 0) {
     return null;
   }
 
@@ -130,7 +130,7 @@ export function upsertConnection(
   return {
     ...store,
     activeConnectionId: connection.id,
-    connections: existingConnection
+    connections: existingConnection !== null
       ? store.connections.map((item) => (item.id === connection.id ? connection : item))
       : [...store.connections, connection],
     preferencesByConnectionId: {
@@ -170,7 +170,7 @@ export function updateConnectionPreferences(
     rememberedBranches: dedupeBranches(updates.rememberedBranches ?? currentPreferences.rememberedBranches),
   };
 
-  if (!nextPreferences.rememberedBranches.includes(nextPreferences.lastBranch)) {
+  if (nextPreferences.rememberedBranches.includes(nextPreferences.lastBranch) === false) {
     nextPreferences.rememberedBranches = dedupeBranches([
       nextPreferences.lastBranch,
       ...nextPreferences.rememberedBranches,
@@ -225,15 +225,15 @@ export function createConnectionId(): string {
 export function deriveConnectionName(connection: Pick<ConnectionDraft, "serverUrl" | "appId">): string {
   try {
     const host = new URL(connection.serverUrl).host;
-    return host ? `${connection.appId} @ ${host}` : connection.appId;
+    return host.length > 0 ? `${connection.appId} @ ${host}` : connection.appId;
   } catch {
-    return connection.appId || "Jazz connection";
+    return connection.appId.length > 0 ? connection.appId : "Jazz connection";
   }
 }
 
 export function getConnectionDisplayName(connection: StoredConnection): string {
   const name = connection.name.trim();
-  return name || deriveConnectionName(connection);
+  return name.length > 0 ? name : deriveConnectionName(connection);
 }
 
 export function getConnectionSecondaryLabel(connection: StoredConnection): string {
@@ -245,11 +245,13 @@ export function getConnectionSecondaryLabel(connection: StoredConnection): strin
 }
 
 export function normalizeBranchName(branch: string | null | undefined): string {
-  return branch?.trim() || DEFAULT_BRANCH_NAME;
+  const normalizedBranch = branch?.trim() ?? "";
+  return normalizedBranch.length > 0 ? normalizedBranch : DEFAULT_BRANCH_NAME;
 }
 
 export function normalizeEnvName(env: string | null | undefined): string {
-  return env?.trim() || "dev";
+  const normalizedEnv = env?.trim() ?? "";
+  return normalizedEnv.length > 0 ? normalizedEnv : "dev";
 }
 
 export function resolveDefaultBranch(
@@ -267,7 +269,7 @@ export function resolveDefaultSchemaHash(
   schemaHash?: string | null,
 ): string | null {
   const nextSchemaHash = schemaHash ?? getConnectionPreferences(store, connectionId).lastSchemaHash;
-  if (nextSchemaHash && availableSchemaHashes.includes(nextSchemaHash)) {
+  if (nextSchemaHash !== null && availableSchemaHashes.includes(nextSchemaHash) === true) {
     return nextSchemaHash;
   }
 
@@ -276,7 +278,7 @@ export function resolveDefaultSchemaHash(
 }
 
 function migrateStoredConnections(parsed: unknown): StoredConnectionsStore | null {
-  if (isStoredConnectionsStore(parsed)) {
+  if (isStoredConnectionsStore(parsed) === true) {
     return {
       version: 3,
       activeConnectionId: parsed.activeConnectionId,
@@ -297,7 +299,7 @@ function migrateStoredConnections(parsed: unknown): StoredConnectionsStore | nul
     };
   }
 
-  if (isLegacyStoredConnectionsStore(parsed)) {
+  if (isLegacyStoredConnectionsStore(parsed) === true) {
     return {
       version: 3,
       activeConnectionId: parsed.activeConnectionId,
@@ -322,7 +324,7 @@ function migrateStoredConnections(parsed: unknown): StoredConnectionsStore | nul
     };
   }
 
-  if (isLegacyStoredConfig(parsed)) {
+  if (isLegacyStoredConfig(parsed) === true) {
     const connection = createConnectionFromDraft(
       {
         name: deriveConnectionName(parsed),
@@ -360,11 +362,11 @@ function isStoredConnectionsStore(value: unknown): value is StoredConnectionsSto
   return (
     candidate.version === 3 &&
     (candidate.activeConnectionId === null || typeof candidate.activeConnectionId === "string") &&
-    Array.isArray(candidate.connections) &&
-    candidate.connections.every(isStoredConnection) &&
+    Array.isArray(candidate.connections) === true &&
+    candidate.connections.every(isStoredConnection) === true &&
     typeof candidate.preferencesByConnectionId === "object" &&
     candidate.preferencesByConnectionId !== null &&
-    Object.values(candidate.preferencesByConnectionId).every(isConnectionPreferences)
+    Object.values(candidate.preferencesByConnectionId).every(isConnectionPreferences) === true
   );
 }
 
@@ -377,8 +379,8 @@ function isLegacyStoredConnectionsStore(value: unknown): value is LegacyStoredCo
   return (
     candidate.version === 2 &&
     (candidate.activeConnectionId === null || typeof candidate.activeConnectionId === "string") &&
-    Array.isArray(candidate.connections) &&
-    candidate.connections.every(isLegacyStoredConnection)
+    Array.isArray(candidate.connections) === true &&
+    candidate.connections.every(isLegacyStoredConnection) === true
   );
 }
 
@@ -400,7 +402,7 @@ function isStoredConnection(value: unknown): value is StoredConnection {
 
 function isLegacyStoredConnection(value: unknown): value is LegacyStoredConnection {
   return (
-    isStoredConnection(value) &&
+    isStoredConnection(value) === true &&
     typeof (value as LegacyStoredConnection).branch === "string" &&
     typeof (value as LegacyStoredConnection).schemaHash === "string"
   );
@@ -429,8 +431,8 @@ function isConnectionPreferences(value: unknown): value is ConnectionPreferences
   return (
     typeof candidate.lastBranch === "string" &&
     (candidate.lastSchemaHash === null || typeof candidate.lastSchemaHash === "string") &&
-    Array.isArray(candidate.rememberedBranches) &&
-    candidate.rememberedBranches.every((branch) => typeof branch === "string")
+    Array.isArray(candidate.rememberedBranches) === true &&
+    candidate.rememberedBranches.every((branch) => typeof branch === "string") === true
   );
 }
 
@@ -440,7 +442,7 @@ function dedupeBranches(branches: string[]): string[] {
 
   for (const branch of branches) {
     const normalizedBranch = normalizeBranchName(branch);
-    if (seen.has(normalizedBranch)) {
+    if (seen.has(normalizedBranch) === true) {
       continue;
     }
 

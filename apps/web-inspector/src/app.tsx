@@ -24,7 +24,7 @@ declare module "@tanstack/react-router" {
 }
 
 const rootElement = document.getElementById("root");
-if (rootElement) {
+if (rootElement !== null) {
   ReactDOM.createRoot(rootElement).render(
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <TooltipProvider>

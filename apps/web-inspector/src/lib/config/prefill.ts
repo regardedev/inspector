@@ -38,10 +38,6 @@ export function readPrefillConfig(locationOverride?: Location): PrefillConfig | 
   };
 }
 
-export function hasPrefillConfig(locationOverride?: Location): boolean {
-  return readPrefillConfig(locationOverride) !== null;
-}
-
 function mergeSearchParams(searchParams: URLSearchParams, hashParams: URLSearchParams): URLSearchParams {
   const mergedParams = new URLSearchParams(searchParams);
 

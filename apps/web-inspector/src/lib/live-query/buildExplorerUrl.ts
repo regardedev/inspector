@@ -2,7 +2,7 @@ import { appRoutes } from "@/lib/navigation/appRoutes";
 
 import { extractFiltersFromIR } from "./extractFiltersFromIR";
 
-interface BuildExplorerUrlOptions {
+interface BuildExplorerLinkOptions {
   branch: string;
   connectionId: string;
   query: string;
@@ -10,31 +10,38 @@ interface BuildExplorerUrlOptions {
   tableName: string;
 }
 
-export function buildExplorerUrl({
+export function buildExplorerLink({
   branch,
   connectionId,
   query,
   schemaHash,
   tableName,
-}: BuildExplorerUrlOptions): string {
-  const basePath = appRoutes.table
-    .replace("$connectionId", connectionId)
-    .replace("$branch", branch)
-    .replace("$schemaHash", schemaHash)
-    .replace("$tableName", tableName);
+}: BuildExplorerLinkOptions) {
+  const link = {
+    to: appRoutes.table,
+    params: {
+      connectionId,
+      branch,
+      schemaHash,
+      tableName,
+    },
+  } as const;
 
   try {
     const parsedQuery = JSON.parse(query) as { relation_ir?: unknown };
     const filters = extractFiltersFromIR(parsedQuery.relation_ir);
 
     if (filters.length === 0) {
-      return basePath;
+      return link;
     }
 
-    const params = new URLSearchParams();
-    params.set("filters", JSON.stringify(filters));
-    return `${basePath}?${params.toString()}`;
+    return {
+      ...link,
+      search: {
+        filters: JSON.stringify(filters),
+      },
+    } as const;
   } catch {
-    return basePath;
+    return link;
   }
 }

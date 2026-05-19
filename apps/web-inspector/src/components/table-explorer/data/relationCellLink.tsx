@@ -1,8 +1,9 @@
+import { Link } from "@tanstack/react-router";
 import { ExternalLinkIcon } from "lucide-react";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { useRelationRow } from "@/hooks/useRelationRow";
-import { buildRelationTableHref } from "@/lib/table-explorer/relationNavigation";
+import { buildRelationTableLink } from "@/lib/table-explorer/relationNavigation";
 
 interface RelationCellLinkProps {
   relationId: string;
@@ -17,20 +18,24 @@ export function RelationCellLink({ relationId, relationTable }: RelationCellLink
     return <span className="truncate">{displayValue}</span>;
   }
 
+  const relationLink = buildRelationTableLink({
+    connectionId: currentConnectionId,
+    branch: currentBranch,
+    schemaHash: currentSchemaHash,
+    tableName: relationTable,
+    relationId,
+  });
+
   return (
-    <a
-      href={buildRelationTableHref({
-        connectionId: currentConnectionId,
-        branch: currentBranch,
-        schemaHash: currentSchemaHash,
-        tableName: relationTable,
-        relationId,
-      })}
+    <Link
+      to={relationLink.to}
+      params={relationLink.params}
+      search={relationLink.search}
       className="inline-flex items-center gap-1 truncate text-foreground underline-offset-4 hover:underline"
       title={`${relationTable}.${relationId}`}
     >
       <span className="truncate">{displayValue}</span>
       <ExternalLinkIcon className="size-3 shrink-0" />
-    </a>
+    </Link>
   );
 }

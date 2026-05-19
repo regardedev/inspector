@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Button } from "@regarde/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@regarde/ui/field";
 import { Input } from "@regarde/ui/input";
@@ -26,9 +28,28 @@ export function AddConnectionForm({
   onUpdateField,
 }: AddConnectionFormProps): React.ReactElement {
   const hasError = errorMessage !== null;
+  const [touchedFields, setTouchedFields] = useState<Partial<Record<keyof AddConnectionFormValues, boolean>>>({});
+  const isFieldInvalid = (field: keyof AddConnectionFormValues) =>
+    touchedFields[field] === true && formValues[field].trim().length === 0;
+  const markFieldTouched = (field: keyof AddConnectionFormValues) => {
+    setTouchedFields((currentFields) => ({ ...currentFields, [field]: true }));
+  };
+  const markRequiredFieldsTouched = () => {
+    setTouchedFields((currentFields) => ({
+      ...currentFields,
+      serverUrl: true,
+      appId: true,
+      adminSecret: true,
+    }));
+  };
+
+  const handleSubmit: FormSubmitHandler = (event) => {
+    markRequiredFieldsTouched();
+    onSubmit(event);
+  };
 
   return (
-    <form className="flex min-h-0 flex-1 flex-col gap-4" onSubmit={onSubmit}>
+    <form className="flex min-h-0 flex-1 flex-col gap-4" onSubmit={handleSubmit}>
       <FieldGroup className="gap-4">
         <Field>
           <FieldLabel htmlFor="connection-name">Connection name</FieldLabel>
@@ -41,43 +62,61 @@ export function AddConnectionForm({
             placeholder="My Jazz app"
           />
         </Field>
-        <Field data-invalid={formValues.serverUrl.trim().length === 0}>
+        <Field data-invalid={isFieldInvalid("serverUrl") === true}>
           <FieldLabel htmlFor="connection-server-url">Server URL</FieldLabel>
           <Input
             id="connection-server-url"
             value={formValues.serverUrl}
+            onBlur={() => {
+              markFieldTouched("serverUrl");
+            }}
+            onInvalid={() => {
+              markFieldTouched("serverUrl");
+            }}
             onChange={(event) => {
               onUpdateField("serverUrl", event.currentTarget.value);
             }}
             placeholder="https://v2.sync.jazz.tools/"
             required={true}
-            aria-invalid={formValues.serverUrl.trim().length === 0}
+            aria-invalid={isFieldInvalid("serverUrl") === true}
           />
           <FieldDescription>Sync server that stores your app data.</FieldDescription>
         </Field>
-        <Field data-invalid={formValues.appId.trim().length === 0}>
+        <Field data-invalid={isFieldInvalid("appId") === true}>
           <FieldLabel htmlFor="connection-app-id">App ID</FieldLabel>
           <Input
             id="connection-app-id"
             value={formValues.appId}
+            onBlur={() => {
+              markFieldTouched("appId");
+            }}
+            onInvalid={() => {
+              markFieldTouched("appId");
+            }}
             onChange={(event) => {
               onUpdateField("appId", event.currentTarget.value);
             }}
             required={true}
-            aria-invalid={formValues.appId.trim().length === 0}
+            aria-invalid={isFieldInvalid("appId") === true}
           />
         </Field>
-        <Field data-invalid={formValues.adminSecret.trim().length === 0}>
+        <Field data-invalid={isFieldInvalid("adminSecret") === true}>
           <FieldLabel htmlFor="connection-admin-secret">Admin secret</FieldLabel>
           <Input
             id="connection-admin-secret"
             type="password"
             value={formValues.adminSecret}
+            onBlur={() => {
+              markFieldTouched("adminSecret");
+            }}
+            onInvalid={() => {
+              markFieldTouched("adminSecret");
+            }}
             onChange={(event) => {
               onUpdateField("adminSecret", event.currentTarget.value);
             }}
             required={true}
-            aria-invalid={formValues.adminSecret.trim().length === 0}
+            aria-invalid={isFieldInvalid("adminSecret") === true}
           />
         </Field>
         <div className="grid grid-cols-2 gap-4">
@@ -111,7 +150,7 @@ export function AddConnectionForm({
           Cancel
         </Button>
         <Button type="submit" disabled={canSubmit === false} loading={isSubmitting === true}>
-          Add connections
+          Add connection
         </Button>
       </div>
     </form>

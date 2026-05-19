@@ -27,9 +27,10 @@ export function LiveQueryListPane({
     listSearchValue.trim().length === 0 ? "No active server subscriptions found." : "Try a different table search.";
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-r border-border bg-background">
-      <div className="border-b border-border px-2 py-1">
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      <div className="flex h-10 shrink-0 items-center border-b border-border px-3">
         <Search
+          aria-label="Search live query tables"
           value={listSearchValue}
           onChange={(event) => {
             onListSearchValueChange(event.currentTarget.value);
@@ -38,9 +39,16 @@ export function LiveQueryListPane({
         />
       </div>
       <div className="min-h-0 flex-1 overflow-auto p-2">
-        <div className="flex flex-col gap-1">
+        <div
+          className="flex flex-col gap-1"
+          role="listbox"
+          aria-label="Live query table filter"
+          aria-busy={isInitialLoading === true}
+        >
           <button
             type="button"
+            role="option"
+            aria-selected={selectedTableName === null}
             onClick={() => {
               onSelectedTableNameChange(null);
             }}
@@ -51,7 +59,9 @@ export function LiveQueryListPane({
           >
             <span className="truncate">All tables</span>
           </button>
-          {isInitialLoading === true ? null : shouldShowEmptyState === true ? (
+          {isInitialLoading === true ? (
+            <EmptyState title="Loading tables" description="Fetching active server subscriptions." />
+          ) : shouldShowEmptyState === true ? (
             <EmptyState title="No tables found" description={emptyStateDescription} />
           ) : (
             visibleTableItems.map((tableItem) => {
@@ -61,6 +71,8 @@ export function LiveQueryListPane({
                 <button
                   key={tableItem.tableName}
                   type="button"
+                  role="option"
+                  aria-selected={isActive === true}
                   onClick={() => {
                     onSelectedTableNameChange(tableItem.tableName);
                   }}
@@ -70,7 +82,9 @@ export function LiveQueryListPane({
                   )}
                 >
                   <span className="truncate">{tableItem.tableName}</span>
-                  <Badge variant="secondary" size="sm">{tableItem.subscriptionCount}</Badge>
+                  <Badge variant="secondary" size="sm" aria-label={`${tableItem.subscriptionCount} subscriptions`}>
+                    {tableItem.subscriptionCount}
+                  </Badge>
                 </button>
               );
             })

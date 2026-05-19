@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { Link } from "@tanstack/react-router";
 import type { ColumnDescriptor } from "jazz-tools";
 
 import { Button } from "@regarde/ui/button";
@@ -24,7 +25,7 @@ import {
   parseMutationFieldValue,
   type MutationFormField,
 } from "@/lib/table-explorer/mutationParsing";
-import { buildRelationTableHref } from "@/lib/table-explorer/relationNavigation";
+import { buildRelationTableLink } from "@/lib/table-explorer/relationNavigation";
 import type { DetailPaneMode } from "@/types/tableExplorer";
 
 export interface FieldState {
@@ -289,6 +290,7 @@ export function RowEditorFields({
                     fill={true}
                     selected={isBooleanFieldNull(fieldState) === "true"}
                     onClick={() => {
+                      onFieldNullChange(column.name, false);
                       onFieldTextChange(column.name, "true");
                     }}
                   >
@@ -298,6 +300,7 @@ export function RowEditorFields({
                     fill={true}
                     selected={isBooleanFieldNull(fieldState) === "false"}
                     onClick={() => {
+                      onFieldNullChange(column.name, false);
                       onFieldTextChange(column.name, "false");
                     }}
                   >
@@ -357,8 +360,8 @@ export function RowEditorFields({
                   currentBranch !== null &&
                   currentSchemaHash !== null ? (
                     <div className="flex justify-end">
-                      <a
-                        href={buildRelationTableHref({
+                      <Link
+                        {...buildRelationTableLink({
                           connectionId: currentConnectionId,
                           branch: currentBranch,
                           schemaHash: currentSchemaHash,
@@ -368,7 +371,7 @@ export function RowEditorFields({
                         className="text-xs text-muted-foreground underline-offset-4 hover:underline"
                       >
                         Show
-                      </a>
+                      </Link>
                     </div>
                   ) : null}
                   <Input

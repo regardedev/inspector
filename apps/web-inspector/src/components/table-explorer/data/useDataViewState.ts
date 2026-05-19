@@ -1,8 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { Table } from "@tanstack/react-table";
-import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDescriptor, DynamicTableRow } from "jazz-tools";
+import { useAll } from "jazz-tools/react";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { useDataGrid } from "@/components/table-explorer/data/useDataGrid";
@@ -11,15 +11,13 @@ import { useInspectorRowEditor } from "@/hooks/useInspectorRowEditor";
 import { useTableExplorerSearchParams } from "@/hooks/useTableExplorerSearchParams";
 import { useTableMutations } from "@/hooks/useTableMutations";
 import { useTableQuery } from "@/hooks/useTableQuery";
-import { useTableSelection } from "@/hooks/useTableSelection";
-import { appRoutes } from "@/lib/navigation/appRoutes";
+import { GenericQueryBuilder } from "@/lib/table-explorer/genericQueryBuilder";
 import { getFieldReadOnlyReason } from "@/lib/table-explorer/mutationParsing";
 import { getTableColumns } from "@/lib/table-explorer/tableSchema";
 import type { TableFilterClause } from "@/types/tableFilters";
-import type { DetailPaneMode, InspectorRowEditorMode, TableRowId } from "@/types/tableExplorer";
+import type { InspectorRowEditorMode, TableRowId } from "@/types/tableExplorer";
 
 interface UseDataViewStateOptions {
-  forcedDetailPaneMode: DetailPaneMode | null;
   tableName: string;
 }
 
@@ -67,16 +65,12 @@ function createInsertRowValues(schemaColumns: ColumnDescriptor[]): Record<string
 }
 
 export function useDataViewState({
-  forcedDetailPaneMode,
   tableName,
 }: UseDataViewStateOptions): UseDataViewStateResult {
-  const navigate = useNavigate();
   const { currentBranch, currentConnectionId, currentSchemaHash, runtime } = useInspector();
   const searchState = useTableExplorerSearchParams();
   const query = useTableQuery({ tableName });
   const schemaColumns = useMemo(() => getTableColumns(runtime.wasmSchema, tableName), [runtime.wasmSchema, tableName]);
-  const validRowIds = useMemo(() => query.rows.map((row) => String(row.id)), [query.rows]);
-  const selection = useTableSelection({ validRowIds });
   const rowEditor = useInspectorRowEditor();
   const mutations = useTableMutations(tableName);
   const tableKey = `${currentConnectionId ?? "unknown"}:${currentBranch ?? "unknown"}:${currentSchemaHash ?? "unknown"}:${tableName}`;
@@ -86,15 +80,77 @@ export function useDataViewState({
     columnIds,
   });
 
-  const handleSelectedRowIdsChange = (nextSelectedRowIds: TableRowId[]) => {
-    selection.setSelectedRowIds(nextSelectedRowIds);
+  const editorMode = searchState.editorMode ?? "closed";
+  const activeRowId = searchState.editorMode === "edit" ? searchState.rowId : null;
+  const editedRowIds = useMemo(() => {
+    if (activeRowId === null) {
+      return [];
+    }
 
+    if (rowEditor.editedRowIds.includes(activeRowId) === true) {
+      return rowEditor.editedRowIds;
+    }
+
+    return [activeRowId];
+  }, [activeRowId, rowEditor.editedRowIds]);
+  const activeRowIndex = activeRowId === null ? 0 : Math.max(editedRowIds.indexOf(activeRowId), 0);
+  const validRowIds = useMemo(() => query.rows.map((row) => String(row.id)), [query.rows]);
+  const selectedRowIds = useMemo(() => {
+    if (searchState.editorMode !== "edit") {
+      return [];
+    }
+
+    return editedRowIds.filter((rowId) => validRowIds.includes(rowId) === true);
+  }, [editedRowIds, searchState.editorMode, validRowIds]);
+
+  const activeRowQueryBuilder = useMemo(() => {
+    if (runtime.wasmSchema === null || activeRowId === null || searchState.editorMode !== "edit") {
+      return null;
+    }
+
+    return new GenericQueryBuilder(tableName, runtime.wasmSchema)
+      .where({ id: activeRowId })
+      .limit(1)
+      .offset(0);
+  }, [activeRowId, runtime.wasmSchema, searchState.editorMode, tableName]);
+  const activeRowQueryOptions = useMemo(() => {
+    return {
+      propagation: "full" as const,
+      visibility: "hidden_from_live_query_list" as const,
+    };
+  }, []);
+  const activeRows = useAll<DynamicTableRow>(activeRowQueryBuilder ?? undefined, activeRowQueryOptions);
+
+  useEffect(() => {
+    if (searchState.editorMode === "insert") {
+      if (rowEditor.mode !== "insert") {
+        rowEditor.openInsert();
+      }
+      return;
+    }
+
+    if (activeRowId !== null) {
+      const hasActiveRowId = rowEditor.editedRowIds.includes(activeRowId);
+      if (hasActiveRowId === false) {
+        rowEditor.openEdit([activeRowId]);
+      }
+      return;
+    }
+
+    if (rowEditor.mode !== "closed") {
+      rowEditor.close();
+    }
+  }, [activeRowId, rowEditor.editedRowIds, rowEditor.mode, searchState.editorMode]);
+
+  const handleSelectedRowIdsChange = (nextSelectedRowIds: TableRowId[]) => {
     if (nextSelectedRowIds.length === 0) {
       rowEditor.close();
+      void searchState.setRowEditor(null, null, { replace: false });
       return;
     }
 
     rowEditor.openEdit(nextSelectedRowIds);
+    void searchState.setRowEditor("edit", nextSelectedRowIds[0] ?? null, { replace: false });
   };
 
   const table = useDataGrid({
@@ -102,75 +158,78 @@ export function useDataViewState({
     columns: query.columns,
     sortColumn: searchState.sortColumn,
     sortDirection: searchState.sortDirection,
-    selectedRowIds: selection.selectedRowIds,
+    selectedRowIds,
     columnVisibility: visibility.columnVisibility,
     onSortChange: searchState.setSorting,
     onSelectedRowIdsChange: handleSelectedRowIdsChange,
     onColumnVisibilityChange: visibility.setColumnVisibility,
   });
   const selectedRow = useMemo(() => {
-    return query.rows.find((row) => String(row.id) === rowEditor.activeRowId) ?? null;
-  }, [query.rows, rowEditor.activeRowId]);
+    const visibleSelectedRow = query.rows.find((row) => String(row.id) === activeRowId) ?? null;
+    if (visibleSelectedRow !== null) {
+      return visibleSelectedRow;
+    }
+
+    return activeRows?.[0] ?? null;
+  }, [activeRowId, activeRows, query.rows]);
   const rowValues = useMemo(() => {
-    if (rowEditor.mode === "insert") {
+    if (searchState.editorMode === "insert") {
       return createInsertRowValues(schemaColumns);
     }
 
     return selectedRow;
-  }, [rowEditor.mode, schemaColumns, selectedRow]);
+  }, [schemaColumns, searchState.editorMode, selectedRow]);
 
   const closeDetailPane = () => {
-    if (
-      forcedDetailPaneMode === "edit" &&
-      currentConnectionId !== null &&
-      currentBranch !== null &&
-      currentSchemaHash !== null
-    ) {
-      void navigate({
-        to: appRoutes.table,
-        params: {
-          branch: currentBranch,
-          connectionId: currentConnectionId,
-          schemaHash: currentSchemaHash,
-          tableName,
-        },
-      });
-      return;
-    }
-
-    selection.clearSelection();
     rowEditor.close();
+    void searchState.setRowEditor(null, null, { replace: false });
   };
 
   const openInsert = () => {
-    selection.clearSelection();
     rowEditor.openInsert();
+    void searchState.setRowEditor("insert", null, { replace: false });
   };
 
-  const handleDelete = rowEditor.mode === "edit" && rowEditor.activeRowId !== null
-    ? async () => {
-        const activeRowId = rowEditor.activeRowId;
+  const goToRowIndex = (nextActiveRowIndex: number) => {
+    const nextActiveRowId = editedRowIds[nextActiveRowIndex] ?? null;
+    if (nextActiveRowId === null) {
+      return;
+    }
 
-        if (activeRowId === null) {
+    rowEditor.setActiveRowIndex(nextActiveRowIndex);
+    void searchState.setRowEditor("edit", nextActiveRowId, { replace: false });
+  };
+
+  const goToPreviousRow = () => {
+    goToRowIndex(Math.max(activeRowIndex - 1, 0));
+  };
+
+  const goToNextRow = () => {
+    goToRowIndex(Math.min(activeRowIndex + 1, editedRowIds.length - 1));
+  };
+
+  const handleDelete = searchState.editorMode === "edit" && activeRowId !== null
+    ? async () => {
+        const rowIdToDelete = activeRowId;
+
+        if (rowIdToDelete === null) {
           return;
         }
 
-        await mutations.deleteRow(activeRowId);
-        const nextSelectedRowIds = selection.selectedRowIds.filter((rowId) => rowId !== activeRowId);
-        handleSelectedRowIdsChange(nextSelectedRowIds);
+        await mutations.deleteRow(rowIdToDelete);
+        const nextEditedRowIds = editedRowIds.filter((rowId) => rowId !== rowIdToDelete);
 
-        if (nextSelectedRowIds.length === 0) {
+        if (nextEditedRowIds.length === 0) {
           closeDetailPane();
           return;
         }
 
-        const nextActiveRowIndex = Math.min(rowEditor.activeRowIndex, nextSelectedRowIds.length - 1);
-        rowEditor.openEdit(nextSelectedRowIds, nextActiveRowIndex);
+        const nextActiveRowIndex = Math.min(activeRowIndex, nextEditedRowIds.length - 1);
+        const nextActiveRowId = nextEditedRowIds[nextActiveRowIndex] ?? null;
+        rowEditor.openEdit(nextEditedRowIds, nextActiveRowIndex);
+        void searchState.setRowEditor("edit", nextActiveRowId, { replace: false });
       }
     : undefined;
-
-  const resolvedRowEditorMode: InspectorRowEditorMode =
-    forcedDetailPaneMode === "edit" && rowEditor.mode === "closed" ? "edit" : rowEditor.mode;
 
   return {
     table,
@@ -183,13 +242,13 @@ export function useDataViewState({
     schemaColumns,
     rowValues,
     rowEditor: {
-      activeRowId: rowEditor.activeRowId,
-      activeRowIndex: rowEditor.activeRowIndex,
-      editedRowIds: rowEditor.editedRowIds,
-      goToNextRow: rowEditor.goToNextRow,
-      goToPreviousRow: rowEditor.goToPreviousRow,
-      isOpen: forcedDetailPaneMode === "edit" ? true : rowEditor.isOpen,
-      mode: resolvedRowEditorMode,
+      activeRowId,
+      activeRowIndex,
+      editedRowIds,
+      goToNextRow,
+      goToPreviousRow,
+      isOpen: searchState.editorMode !== null,
+      mode: editorMode,
       openInsert,
     },
     handleRowEditorOpenChange: (open) => {
@@ -199,8 +258,8 @@ export function useDataViewState({
     },
     handleDelete,
     handleEditSave: async (values) => {
-      if (rowEditor.activeRowId !== null) {
-        await mutations.updateRow(rowEditor.activeRowId, values);
+      if (activeRowId !== null) {
+        await mutations.updateRow(activeRowId, values);
       }
     },
     handleInsertSave: async (values, options) => {

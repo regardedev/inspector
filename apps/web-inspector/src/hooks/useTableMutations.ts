@@ -20,7 +20,7 @@ function omitUndefinedValues(values: Record<string, unknown>): Record<string, un
 export function useTableMutations(tableName: string): UseTableMutationsResult {
   const db = useDb();
   const { runtime } = useInspector();
-  const [isPending, setIsPending] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const tableProxy = useMemo(() => {
@@ -33,20 +33,20 @@ export function useTableMutations(tableName: string): UseTableMutationsResult {
 
   const runMutation = async (callback: () => Promise<void>) => {
     try {
-      setIsPending(true);
+      setPendingCount((currentPendingCount) => currentPendingCount + 1);
       setError(null);
       await callback();
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : String(nextError));
       throw nextError;
     } finally {
-      setIsPending(false);
+      setPendingCount((currentPendingCount) => Math.max(0, currentPendingCount - 1));
     }
   };
 
   return {
     error,
-    isPending,
+    isPending: pendingCount > 0,
     insertRow: async (values) => {
       if (tableProxy === null) {
         throw new Error("Schema is not loaded.");

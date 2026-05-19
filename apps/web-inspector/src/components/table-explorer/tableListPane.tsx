@@ -9,7 +9,6 @@ import { appRoutes } from "@/lib/navigation/appRoutes";
 
 interface TableListPaneProps {
   filteredTables: string[];
-  isOpen: boolean;
   searchValue: string;
   selectedTableName: string | null;
   tables: string[];
@@ -18,7 +17,6 @@ interface TableListPaneProps {
 
 export function TableListPane({
   filteredTables,
-  isOpen,
   searchValue,
   selectedTableName,
   tables,
@@ -28,9 +26,10 @@ export function TableListPane({
   const canBuildHref = currentConnectionId !== null && currentBranch !== null && currentSchemaHash !== null;
 
   return (
-    <div className={cn("flex h-full min-h-0 flex-col bg-background", isOpen === true ? "border-r border-border" : null)}>
+    <div className="flex h-full min-h-0 flex-col bg-background">
       <div className="flex h-10 shrink-0 items-center border-b border-border px-3">
         <Search
+          aria-label="Search tables"
           value={searchValue}
           onChange={(event) => {
             onSearchValueChange(event.currentTarget.value);
@@ -39,7 +38,7 @@ export function TableListPane({
         />
       </div>
       <div className="min-h-0 flex-1 overflow-auto p-2">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1" role="listbox" aria-label="Tables">
           {tables.length === 0 ? (
             <EmptyState title="No tables" description="No published tables found in this schema." />
           ) : filteredTables.length === 0 ? (
@@ -62,6 +61,8 @@ export function TableListPane({
                   return (
                     <div
                       key={tableName}
+                      role="option"
+                      aria-selected={isActive === true}
                       className={cn(
                         "flex min-h-7 items-center rounded-xs px-3 text-sm text-foreground",
                         isActive === true ? "bg-muted" : "hover:bg-muted/60",
@@ -77,6 +78,13 @@ export function TableListPane({
                     key={tableName}
                     to={appRoutes.table}
                     params={tableParams}
+                    search={(currentSearch) => ({
+                      ...currentSearch,
+                      mode: undefined,
+                      rowId: undefined,
+                    })}
+                    role="option"
+                    aria-selected={isActive === true}
                     className={cn(
                       "flex min-h-7 items-center rounded-xs px-3 text-sm text-foreground",
                       isActive === true ? "bg-muted" : "hover:bg-muted/60",

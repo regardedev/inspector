@@ -7,15 +7,8 @@ import { SelectedTableView } from "@/components/table-explorer/selectedTableView
 import { TableListPane } from "@/components/table-explorer/tableListPane";
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { useInspectorTables } from "@/hooks/useInspectorTables";
-import type { DetailPaneMode } from "@/types/tableExplorer";
 
-interface TableExplorerScreenProps {
-  forcedDetailPaneMode?: DetailPaneMode | null;
-}
-
-export function TableExplorerScreen({
-  forcedDetailPaneMode = null,
-}: TableExplorerScreenProps): React.ReactElement {
+export function TableExplorerScreen(): React.ReactElement {
   const { currentTableName } = useInspector();
   const [tableSearch, setTableSearch] = useState("");
   const { filteredTables, tables } = useInspectorTables(tableSearch);
@@ -41,8 +34,9 @@ export function TableExplorerScreen({
   };
 
   return (
-    <ResizableGroup orientation="horizontal" className="bg-background">
+    <ResizableGroup orientation="horizontal" className="min-w-0 bg-background">
       <ResizablePanel
+        className="min-w-0 overflow-hidden"
         panelRef={listPaneRef}
         collapsible
         collapsedSize={0}
@@ -53,7 +47,6 @@ export function TableExplorerScreen({
       >
         <TableListPane
           filteredTables={filteredTables}
-          isOpen={isListPaneOpen}
           searchValue={tableSearch}
           selectedTableName={currentTableName}
           tables={tables}
@@ -61,9 +54,8 @@ export function TableExplorerScreen({
         />
       </ResizablePanel>
       {isListPaneOpen === true ? <ResizableSeparator /> : null}
-      <ResizablePanel>
+      <ResizablePanel className="min-w-0 overflow-hidden">
         <SelectedTableView
-          forcedDetailPaneMode={forcedDetailPaneMode}
           isListPaneOpen={isListPaneOpen}
           tableName={currentTableName}
           onToggleListPane={handleToggleListPane}

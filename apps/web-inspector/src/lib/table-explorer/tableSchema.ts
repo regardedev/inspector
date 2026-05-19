@@ -47,15 +47,6 @@ export function getTableColumns(schema: WasmSchema | null, tableName: string | n
   return schema[tableName]?.columns ?? [];
 }
 
-export function getColumnByName(
-  schema: WasmSchema | null,
-  tableName: string | null,
-  columnName: string,
-): ColumnDescriptor | null {
-  const columns = getTableColumns(schema, tableName);
-  return columns.find((column) => column.name === columnName) ?? null;
-}
-
 export function getRelationDisplayColumn(
   schema: WasmSchema | null,
   tableName: string | null,

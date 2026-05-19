@@ -100,6 +100,8 @@ function SortableColumnHeader({
         type="button"
         className="inline-flex h-6 items-center gap-1.5 rounded-xs px-0 text-left text-xs/relaxed font-normal text-secondary-foreground/80 outline-hidden transition-colors hover:bg-transparent hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none"
         onClick={onToggleSort}
+        aria-label={sortDirection === "asc" ? `Sort ${label} descending` : `Sort ${label} ascending`}
+        aria-pressed={sortDirection !== null}
       >
         <span className="truncate">{label}</span>
         {dataType !== null ? <span className="text-[11px] text-muted-foreground">{dataType}</span> : null}
@@ -127,7 +129,7 @@ export function buildDataGridColumns({
         <div className="flex items-center justify-center">
           <SelectionCheckbox
             checked={isAllSelected}
-            indeterminate={isSomeSelected && isAllSelected === false}
+            indeterminate={isSomeSelected === true && isAllSelected === false}
             ariaLabel="Select all loaded rows"
             onCheckedChange={(value) => {
               table.toggleAllPageRowsSelected(value === true);
