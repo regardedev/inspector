@@ -2,25 +2,26 @@ import { Layers, PanelLeftClose, PanelLeftOpen, TableIcon } from "lucide-react";
 
 import { Button } from "@regarde/ui/button";
 import { ButtonGroup, ButtonGroupItem } from "@regarde/ui/buttonGroup";
-import { SidePanel } from "@regarde/ui/sidePanel";
 
 import type { TableExplorerView } from "@/types/tableExplorer";
 
 interface ActionsBarProps {
   children?: React.ReactNode;
+  isListPaneOpen: boolean;
   leftChildren?: React.ReactNode;
+  onToggleListPane: () => void;
   onViewChange: (view: TableExplorerView) => void;
   view: TableExplorerView;
 }
 
 export function ActionsBar({
   children,
+  isListPaneOpen,
   leftChildren,
+  onToggleListPane,
   onViewChange,
   view,
 }: ActionsBarProps): React.ReactElement {
-  const tableListPane = SidePanel.useSidePanel();
-
   return (
     <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-3">
       <div className="flex items-center gap-2">
@@ -28,11 +29,9 @@ export function ActionsBar({
           type="button"
           variant="ghost"
           size="icon-sm"
-          onClick={() => {
-            tableListPane.toggle();
-          }}
+          onClick={onToggleListPane}
         >
-          {tableListPane.open === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+          {isListPaneOpen === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
           <span className="sr-only">Toggle table list</span>
         </Button>
         <ButtonGroup size="sm">

@@ -2,85 +2,15 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { CodeXml, TableProperties } from "lucide-react";
 
 import { Button } from "@regarde/ui/button";
-import { SidePanel } from "@regarde/ui/sidePanel";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@regarde/ui/tooltip";
 import { cn } from "@regarde/ui/lib/utils";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
 import { inspectorRailWidthClassName } from "#/layout/inspectorShell";
 import { appRoutes } from "@/lib/navigation/appRoutes";
 
-interface RailItem {
-  icon: React.ComponentType<{ className?: string }>;
-  id: string;
-  isActive: (pathname: string, schemaPathname: string | null, tablesPathname: string | null) => boolean;
-  title: string;
-  to?: typeof appRoutes.tables | typeof appRoutes.liveQuery;
-}
-
-function getSchemaPathname(
-  schemaParams:
-    | {
-        branch: string;
-        connectionId: string;
-        schemaHash: string;
-      }
-    | undefined,
-): string | null {
-  if (schemaParams === undefined) {
-    return null;
-  }
-
-  return `/conn/${schemaParams.connectionId}/${schemaParams.branch}/${schemaParams.schemaHash}`;
-}
-
-function getTablesPathname(
-  tablesParams:
-    | {
-        branch: string;
-        connectionId: string;
-        schemaHash: string;
-      }
-    | undefined,
-): string | null {
-  if (tablesParams === undefined) {
-    return null;
-  }
-
-  return `/conn/${tablesParams.connectionId}/${tablesParams.branch}/${tablesParams.schemaHash}/tables`;
-}
-
-const railItems: RailItem[] = [
-  {
-    icon: TableProperties,
-    id: "tables",
-    isActive: (pathname, _schemaPathname, tablesPathname) => {
-      if (tablesPathname === null) {
-        return false;
-      }
-
-      return pathname === tablesPathname || pathname.startsWith(`${tablesPathname}/`);
-    },
-    title: "Tables",
-    to: appRoutes.tables,
-  },
-  {
-    icon: CodeXml,
-    id: "live-query",
-    isActive: (pathname, schemaPathname) => {
-      if (schemaPathname === null) {
-        return false;
-      }
-
-      return pathname === `${schemaPathname}/live-query` || pathname.startsWith(`${schemaPathname}/live-query/`);
-    },
-    title: "Live Query",
-    to: appRoutes.liveQuery,
-  },
-];
-
 export function InspectorRail(): React.ReactElement {
   const location = useLocation();
-  const tableListPane = SidePanel.useSidePanel();
   const { currentBranch, currentConnectionId, currentSchemaHash } = useInspector();
 
   const tablesParams =
@@ -91,8 +21,20 @@ export function InspectorRail(): React.ReactElement {
           schemaHash: currentSchemaHash,
         }
       : undefined;
-  const schemaPathname = getSchemaPathname(tablesParams);
-  const tablesPathname = getTablesPathname(tablesParams);
+
+  const tablesBasePath =
+    tablesParams !== undefined
+      ? `/conn/${tablesParams.connectionId}/${tablesParams.branch}/${tablesParams.schemaHash}/tables`
+      : null;
+
+  const isTablesActive =
+    tablesBasePath !== null &&
+    (location.pathname === tablesBasePath || location.pathname.startsWith(`${tablesBasePath}/`));
+
+  const isLiveQueryActive =
+    tablesBasePath !== null &&
+    (location.pathname === `${tablesBasePath}/live-query` ||
+      location.pathname.startsWith(`${tablesBasePath}/live-query/`));
 
   return (
     <aside
@@ -102,49 +44,71 @@ export function InspectorRail(): React.ReactElement {
       )}
     >
       <nav aria-label="Inspector navigation" className="flex flex-1 flex-col items-center gap-1 px-1.5 py-2">
-        {railItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.isActive(location.pathname, schemaPathname, tablesPathname);
-          const isDisabled = item.to !== undefined && tablesParams === undefined;
-
-          if (item.to !== undefined && tablesParams !== undefined && isDisabled === false) {
-            return (
+        {/* Tables */}
+        <Tooltip>
+          <TooltipTrigger render={null}>
+            {tablesParams !== undefined ? (
               <Button
-                key={item.id}
                 variant="ghost"
                 size="icon-sm"
-                nativeButton={false}
-                render={<Link to={item.to} params={tablesParams} />}
-                title={item.title}
+                render={<Link to={appRoutes.tables} params={tablesParams} />}
                 className={cn(
                   "rounded-lg border-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  isActive === true ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground" : "",
+                  isTablesActive === true &&
+                    "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground",
                 )}
-                onClick={() => {
-                  tableListPane.onOpenChange(true);
-                }}
               >
-                <Icon />
-                <span className="sr-only">{item.title}</span>
+                <TableProperties />
+                <span className="sr-only">Tables</span>
               </Button>
-            );
-          }
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                disabled
+                className="rounded-lg border-transparent text-sidebar-foreground/40"
+              >
+                <TableProperties />
+                <span className="sr-only">Tables</span>
+              </Button>
+            )}
+          </TooltipTrigger>
+          <TooltipContent side="right">Tables</TooltipContent>
+        </Tooltip>
 
-          return (
-            <Button
-              key={item.id}
-              type="button"
-              disabled={isDisabled}
-              title={item.title}
-              variant="secondary"
-              size="icon-sm"
-              className="rounded-lg border-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground disabled:opacity-40"
-            >
-              <Icon />
-              <span className="sr-only">{item.title}</span>
-            </Button>
-          );
-        })}
+        {/* Live Query */}
+        <Tooltip>
+          <TooltipTrigger render={null}>
+            {tablesParams !== undefined ? (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                render={<Link to={appRoutes.liveQuery} params={tablesParams} />}
+                className={cn(
+                  "rounded-lg border-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  isLiveQueryActive === true &&
+                    "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground",
+                )}
+              >
+                <CodeXml />
+                <span className="sr-only">Live Query</span>
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                disabled
+                className="rounded-lg border-transparent text-sidebar-foreground/40"
+              >
+                <CodeXml />
+                <span className="sr-only">Live Query</span>
+              </Button>
+            )}
+          </TooltipTrigger>
+          <TooltipContent side="right">Live Query</TooltipContent>
+        </Tooltip>
       </nav>
     </aside>
   );

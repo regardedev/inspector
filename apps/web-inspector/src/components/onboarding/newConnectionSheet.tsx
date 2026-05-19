@@ -6,10 +6,10 @@ import { fetchSchemaHashes } from "jazz-tools";
 import { Button } from "@regarde/ui/button";
 import { Input } from "@regarde/ui/input";
 import { Label } from "@regarde/ui/label";
-import { SidePanel } from "@regarde/ui/sidePanel";
+import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@regarde/ui/resizablePanel";
+import { XIcon } from "lucide-react";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
-import { inspectorDetailPaneWidthClassName } from "#/layout/inspectorShell";
 import { findConnectionByCredentials } from "@/lib/config/connectionIdentity";
 import { DEFAULT_BRANCH_NAME, DEFAULT_SERVER_URL, type ConnectionDraft } from "@/lib/config/connections";
 import { appRoutes } from "@/lib/navigation/appRoutes";
@@ -54,25 +54,28 @@ export function NewConnectionSheet(): React.ReactElement {
   const prefillKey = getPrefillKey(prefill);
 
   return (
-    <SidePanel.Provider
-      open={true}
-      onOpenChange={(open) => {
-        if (open === false) {
-          void navigate({ to: appRoutes.connections });
-        }
-      }}
-    >
-      <NewConnectionPanelContent key={prefillKey} prefill={prefill} />
-    </SidePanel.Provider>
+    <ResizableGroup direction="horizontal">
+      <ResizablePanel />
+      <ResizableSeparator />
+      <ResizablePanel defaultSize={20} minSize={20} maxSize={50}>
+        <NewConnectionPanelContent
+          key={prefillKey}
+          prefill={prefill}
+          onClose={() => {
+            void navigate({ to: appRoutes.connections });
+          }}
+        />
+      </ResizablePanel>
+    </ResizableGroup>
   );
 }
 
 interface NewConnectionPanelContentProps {
   prefill: ReturnType<typeof useInspector>["prefill"];
+  onClose: () => void;
 }
 
-function NewConnectionPanelContent({ prefill }: NewConnectionPanelContentProps): React.ReactElement {
-  const sidePanel = SidePanel.useSidePanel();
+function NewConnectionPanelContent({ prefill, onClose }: NewConnectionPanelContentProps): React.ReactElement {
   const { connections, saveConnection, setActiveConnection } = useInspector();
   const navigate = useNavigate();
   const [step, setStep] = useState<NewConnectionStep>("form");
@@ -178,148 +181,143 @@ function NewConnectionPanelContent({ prefill }: NewConnectionPanelContentProps):
   };
 
   return (
-    <SidePanel side="right" widthClassName={inspectorDetailPaneWidthClassName} className="bg-background">
-      <div className="flex h-full flex-col overflow-hidden border-l border-border bg-background">
-        <SidePanel.Header className="h-11 justify-between border-b border-border px-3 py-2">
-          <SidePanel.Title className="rounded-xs px-1 py-1 text-sm leading-[1.4] font-normal text-foreground">
-            Add New Connection
-          </SidePanel.Title>
-          <SidePanel.CloseButton />
-        </SidePanel.Header>
-        <SidePanel.Content className="mt-0 flex flex-1 flex-col p-4 text-sm leading-[1.4] text-foreground">
-          {step === "form" ? (
-            <form className="flex flex-1 flex-col gap-4" onSubmit={handleFetchSchemas}>
-              <div className="grid gap-4">
-                <FormField label="Connection name" htmlFor="connection-name">
-                  <Input
-                    id="connection-name"
-                    value={formValues.name}
-                    onChange={(event) => {
-                      updateField("name", event.currentTarget.value);
-                    }}
-                    placeholder="My Jazz app"
-                  />
-                </FormField>
-                <FormField label="Server URL" htmlFor="connection-server-url">
-                  <Input
-                    id="connection-server-url"
-                    value={formValues.serverUrl}
-                    onChange={(event) => {
-                      updateField("serverUrl", event.currentTarget.value);
-                    }}
-                    placeholder="https://v2.sync.jazz.tools/"
-                    required
-                  />
-                </FormField>
-                <FormField label="App ID" htmlFor="connection-app-id">
-                  <Input
-                    id="connection-app-id"
-                    value={formValues.appId}
-                    onChange={(event) => {
-                      updateField("appId", event.currentTarget.value);
-                    }}
-                    required
-                  />
-                </FormField>
-                <FormField label="Admin secret" htmlFor="connection-admin-secret">
-                  <Input
-                    id="connection-admin-secret"
-                    type="password"
-                    value={formValues.adminSecret}
-                    onChange={(event) => {
-                      updateField("adminSecret", event.currentTarget.value);
-                    }}
-                    required
-                  />
-                </FormField>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField label="Env" htmlFor="connection-env">
-                    <Input
-                      id="connection-env"
-                      value={formValues.env}
-                      onChange={(event) => {
-                        updateField("env", event.currentTarget.value);
-                      }}
-                    />
-                  </FormField>
-                  <FormField label="Branch" htmlFor="connection-branch">
-                    <Input
-                      id="connection-branch"
-                      value={formValues.branch}
-                      onChange={(event) => {
-                        updateField("branch", event.currentTarget.value);
-                      }}
-                    />
-                  </FormField>
-                </div>
-              </div>
-              <ErrorNotice message={errorMessage} />
-              <div className="mt-auto flex items-center justify-end gap-2 border-t border-border pt-4">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    sidePanel.onOpenChange(false);
+    <div className="flex h-full flex-col overflow-hidden border-l border-border bg-background">
+      <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3 py-2">
+        <h2 className="rounded-xs px-1 py-1 text-sm leading-[1.4] font-normal text-foreground">
+          Add New Connection
+        </h2>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={onClose}
+          className="shrink-0 -mr-1"
+        >
+          <XIcon />
+          <span className="sr-only">Close</span>
+        </Button>
+      </div>
+      <div className="mt-0 flex flex-1 flex-col p-4 text-sm leading-[1.4] text-foreground">
+        {step === "form" ? (
+          <form className="flex flex-1 flex-col gap-4" onSubmit={handleFetchSchemas}>
+            <div className="grid gap-4">
+              <FormField label="Connection name" htmlFor="connection-name">
+                <Input
+                  id="connection-name"
+                  value={formValues.name}
+                  onChange={(event) => {
+                    updateField("name", event.currentTarget.value);
                   }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={canSubmit === false} loading={isSubmitting}>
-                  Fetch schemas
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <div className="flex flex-1 flex-col gap-4">
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-foreground">Select schema</h3>
-                 <p className="text-sm text-muted-foreground">
-                  Choose the stored schema to open for {formValues.appId.trim().length > 0 ? formValues.appId.trim() : "this connection"}.
-                 </p>
-              </div>
-              <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-                {schemaHashes.map((schemaHash) => (
-                  <Button
-                    key={schemaHash}
-                    type="button"
-                    variant="ghost"
-                    className="h-auto justify-start rounded-xs border border-border px-3 py-2 text-left"
-                    onClick={() => {
-                      void handleSchemaSelect(schemaHash);
+                  placeholder="My Jazz app"
+                />
+              </FormField>
+              <FormField label="Server URL" htmlFor="connection-server-url">
+                <Input
+                  id="connection-server-url"
+                  value={formValues.serverUrl}
+                  onChange={(event) => {
+                    updateField("serverUrl", event.currentTarget.value);
+                  }}
+                  placeholder="https://v2.sync.jazz.tools/"
+                  required
+                />
+              </FormField>
+              <FormField label="App ID" htmlFor="connection-app-id">
+                <Input
+                  id="connection-app-id"
+                  value={formValues.appId}
+                  onChange={(event) => {
+                    updateField("appId", event.currentTarget.value);
+                  }}
+                  required
+                />
+              </FormField>
+              <FormField label="Admin secret" htmlFor="connection-admin-secret">
+                <Input
+                  id="connection-admin-secret"
+                  type="password"
+                  value={formValues.adminSecret}
+                  onChange={(event) => {
+                    updateField("adminSecret", event.currentTarget.value);
+                  }}
+                  required
+                />
+              </FormField>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="Env" htmlFor="connection-env">
+                  <Input
+                    id="connection-env"
+                    value={formValues.env}
+                    onChange={(event) => {
+                      updateField("env", event.currentTarget.value);
                     }}
-                    disabled={isSubmitting}
-                  >
-                    <span className="truncate text-sm">{schemaHash}</span>
-                  </Button>
-                ))}
-              </div>
-              <ErrorNotice message={errorMessage} />
-              <div className="flex items-center justify-between border-t border-border pt-4">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    setErrorMessage(null);
-                    setStep("form");
-                  }}
-                >
-                  Back
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    sidePanel.onOpenChange(false);
-                  }}
-                >
-                  Cancel
-                </Button>
+                  />
+                </FormField>
+                <FormField label="Branch" htmlFor="connection-branch">
+                  <Input
+                    id="connection-branch"
+                    value={formValues.branch}
+                    onChange={(event) => {
+                      updateField("branch", event.currentTarget.value);
+                    }}
+                  />
+                </FormField>
               </div>
             </div>
-          )}
-        </SidePanel.Content>
+            <ErrorNotice message={errorMessage} />
+            <div className="mt-auto flex items-center justify-end gap-2 border-t border-border pt-4">
+              <Button type="button" variant="ghost" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={canSubmit === false} loading={isSubmitting}>
+                Fetch schemas
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div className="flex flex-1 flex-col gap-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium text-foreground">Select schema</h3>
+               <p className="text-sm text-muted-foreground">
+                Choose the stored schema to open for {formValues.appId.trim().length > 0 ? formValues.appId.trim() : "this connection"}.
+               </p>
+            </div>
+            <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
+              {schemaHashes.map((schemaHash) => (
+                <Button
+                  key={schemaHash}
+                  type="button"
+                  variant="ghost"
+                  className="h-auto justify-start rounded-xs border border-border px-3 py-2 text-left"
+                  onClick={() => {
+                    void handleSchemaSelect(schemaHash);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  <span className="truncate text-sm">{schemaHash}</span>
+                </Button>
+              ))}
+            </div>
+            <ErrorNotice message={errorMessage} />
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setErrorMessage(null);
+                  setStep("form");
+                }}
+              >
+                Back
+              </Button>
+              <Button type="button" variant="ghost" onClick={onClose}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-    </SidePanel>
+    </div>
   );
 }
 

@@ -8,12 +8,16 @@ import type { DetailPaneMode } from "@/types/tableExplorer";
 
 interface SelectedTableViewProps {
   forcedDetailPaneMode?: DetailPaneMode | null;
+  isListPaneOpen: boolean;
   tableName: string | null;
+  onToggleListPane: () => void;
 }
 
 export function SelectedTableView({
   forcedDetailPaneMode = null,
+  isListPaneOpen,
   tableName,
+  onToggleListPane,
 }: SelectedTableViewProps): React.ReactElement {
   const { runtime } = useInspector();
   const searchState = useTableExplorerSearchParams();
@@ -27,7 +31,15 @@ export function SelectedTableView({
   }
 
   if (searchState.view === "schema") {
-    return <SchemaView tableName={tableName} view="schema" onViewChange={searchState.setView} />;
+    return (
+      <SchemaView
+        tableName={tableName}
+        view="schema"
+        isListPaneOpen={isListPaneOpen}
+        onToggleListPane={onToggleListPane}
+        onViewChange={searchState.setView}
+      />
+    );
   }
 
   return (
@@ -35,6 +47,8 @@ export function SelectedTableView({
       forcedDetailPaneMode={forcedDetailPaneMode}
       tableName={tableName}
       view="data"
+      isListPaneOpen={isListPaneOpen}
+      onToggleListPane={onToggleListPane}
       onViewChange={searchState.setView}
     />
   );

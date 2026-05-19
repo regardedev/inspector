@@ -1,4 +1,5 @@
 import { Button } from "@regarde/ui/button";
+import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@regarde/ui/resizablePanel";
 
 import { ActionsBar } from "@/components/table-explorer/actionsBar";
 import { DataGrid } from "@/components/table-explorer/data/dataGrid";
@@ -11,6 +12,8 @@ import type { DetailPaneMode, TableExplorerView } from "@/types/tableExplorer";
 
 interface DataViewProps {
   forcedDetailPaneMode?: DetailPaneMode | null;
+  isListPaneOpen: boolean;
+  onToggleListPane: () => void;
   onViewChange: (view: TableExplorerView) => Promise<void>;
   tableName: string;
   view: TableExplorerView;
@@ -18,6 +21,8 @@ interface DataViewProps {
 
 export function DataView({
   forcedDetailPaneMode = null,
+  isListPaneOpen,
+  onToggleListPane,
   onViewChange,
   tableName,
   view,
@@ -28,65 +33,83 @@ export function DataView({
   });
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <ActionsBar
-          view={view}
-          onViewChange={onViewChange}
-          leftChildren={(
-            <Button type="button" variant="secondary" size="sm" onClick={state.rowEditor.openInsert}>
-              Insert row
-            </Button>
-          )}
-        >
-          <DataGridToolbar table={state.table} />
-        </ActionsBar>
-        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
-          <DataGrid
-            table={state.table}
-            loadedRowCount={state.loadedRowCount}
-            hasMore={state.hasMore}
-            isFetchingMore={state.isFetchingMore}
-            onFetchMore={state.fetchMore}
-          />
+    <ResizableGroup direction="horizontal" className="min-w-0 bg-background">
+      <ResizablePanel className="min-w-0 overflow-hidden">
+        <div className="flex h-full flex-col overflow-hidden">
+          <ActionsBar
+            view={view}
+            isListPaneOpen={isListPaneOpen}
+            onToggleListPane={onToggleListPane}
+            onViewChange={onViewChange}
+            leftChildren={(
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  if (state.rowEditor.isOpen === true && state.rowEditor.mode === "insert") {
+                    state.handleRowEditorOpenChange(false);
+                  } else {
+                    state.rowEditor.openInsert();
+                  }
+                }}
+              >
+                Insert row
+              </Button>
+            )}
+          >
+            <DataGridToolbar table={state.table} />
+          </ActionsBar>
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <DataGrid
+              table={state.table}
+              loadedRowCount={state.loadedRowCount}
+              hasMore={state.hasMore}
+              isFetchingMore={state.isFetchingMore}
+              onFetchMore={state.fetchMore}
+            />
+          </div>
         </div>
-      </div>
-      <RowEditorSidePanel
-        open={state.rowEditor.isOpen}
-        onOpenChange={state.handleRowEditorOpenChange}
-        mode={state.rowEditor.mode === "insert" ? "insert" : "edit"}
-        editedRowIds={state.rowEditor.editedRowIds}
-        activeRowIndex={state.rowEditor.activeRowIndex}
-        activeRowId={state.rowEditor.activeRowId}
-        rowValues={state.rowValues}
-        schemaColumns={state.schemaColumns}
-        onNavigatePrevious={state.rowEditor.goToPreviousRow}
-        onNavigateNext={state.rowEditor.goToNextRow}
-      >
-        {state.rowEditor.mode === "insert" ? (
-          <InsertRowForm
-            key={`${tableName}:insert`}
-            rowValues={state.rowValues ?? {}}
-            schemaColumns={state.schemaColumns}
-            onCancel={() => {
-              state.handleRowEditorOpenChange(false);
-            }}
-            onSave={state.handleInsertSave}
-          />
-        ) : (
-          <EditRowForm
-            key={`${tableName}:${state.rowEditor.activeRowId ?? "none"}`}
-            rowValues={state.rowValues}
-            schemaColumns={state.schemaColumns}
-            targetRowId={state.rowEditor.activeRowId}
-            onCancel={() => {
-              state.handleRowEditorOpenChange(false);
-            }}
-            onDelete={state.handleDelete}
-            onSave={state.handleEditSave}
-          />
-        )}
-      </RowEditorSidePanel>
-    </div>
+      </ResizablePanel>
+      {state.rowEditor.isOpen === true ? (
+        <>
+          <ResizableSeparator />
+          <ResizablePanel className="min-w-0 overflow-hidden" defaultSize={420} minSize={320} maxSize={720}>
+            <RowEditorSidePanel
+              mode={state.rowEditor.mode === "insert" ? "insert" : "edit"}
+              editedRowIds={state.rowEditor.editedRowIds}
+              activeRowIndex={state.rowEditor.activeRowIndex}
+              activeRowId={state.rowEditor.activeRowId}
+              onNavigatePrevious={state.rowEditor.goToPreviousRow}
+              onNavigateNext={state.rowEditor.goToNextRow}
+            >
+              {state.rowEditor.mode === "insert" ? (
+                <InsertRowForm
+                  key={`${tableName}:insert`}
+                  rowValues={state.rowValues ?? {}}
+                  schemaColumns={state.schemaColumns}
+                  onCancel={() => {
+                    state.handleRowEditorOpenChange(false);
+                  }}
+                  onSave={state.handleInsertSave}
+                />
+              ) : (
+                <EditRowForm
+                  key={`${tableName}:${state.rowEditor.activeRowId ?? "none"}`}
+                  rowValues={state.rowValues}
+                  schemaColumns={state.schemaColumns}
+                  targetRowId={state.rowEditor.activeRowId}
+                  onCancel={() => {
+                    state.handleRowEditorOpenChange(false);
+                  }}
+                  onDelete={state.handleDelete}
+                  onSave={state.handleEditSave}
+                />
+              )}
+            </RowEditorSidePanel>
+          </ResizablePanel>
+        </>
+      ) : null}
+    </ResizableGroup>
   );
 }

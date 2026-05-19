@@ -2,13 +2,14 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { Badge } from "@regarde/ui/badge";
 import { Button } from "@regarde/ui/button";
-import { SidePanel } from "@regarde/ui/sidePanel";
 
 interface ActionsBarProps {
   error: string | null;
   generatedAt: number | null;
   hasRows: boolean;
+  isListPaneOpen: boolean;
   isRefreshing: boolean;
+  onToggleListPane: () => void;
 }
 
 function formatLastRefresh(generatedAt: number | null): string {
@@ -23,9 +24,10 @@ export function ActionsBar({
   error,
   generatedAt,
   hasRows,
+  isListPaneOpen,
   isRefreshing,
+  onToggleListPane,
 }: ActionsBarProps): React.ReactElement {
-  const liveQueryListPane = SidePanel.useSidePanel();
   const statusText = `${formatLastRefresh(generatedAt)}${isRefreshing === true ? " Refreshing..." : ""}`;
 
   return (
@@ -35,11 +37,9 @@ export function ActionsBar({
           type="button"
           variant="ghost"
           size="icon-sm"
-          onClick={() => {
-            liveQueryListPane.toggle();
-          }}
+          onClick={onToggleListPane}
         >
-          {liveQueryListPane.open === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+          {isListPaneOpen === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
           <span className="sr-only">Toggle live query table list</span>
         </Button>
       </div>

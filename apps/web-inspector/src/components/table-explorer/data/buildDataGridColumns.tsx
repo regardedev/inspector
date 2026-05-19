@@ -94,7 +94,6 @@ function SortableColumnHeader({
     );
   }
 
-  // TODO: remove default button
   return (
     <div className="flex h-full items-center">
       <button

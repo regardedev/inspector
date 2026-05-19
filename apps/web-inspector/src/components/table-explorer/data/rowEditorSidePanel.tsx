@@ -1,3 +1,4 @@
+// TODO: standardize this `ColumnDescriptor`
 import type { ColumnDescriptor } from "jazz-tools";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
@@ -14,8 +15,6 @@ interface RowEditorSidePanelProps {
   mode: "insert" | "edit";
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
   rowValues: Record<string, unknown> | null;
   schemaColumns: ColumnDescriptor[];
   tableName: string;
@@ -28,16 +27,12 @@ export function RowEditorSidePanel({
   mode,
   onNavigateNext,
   onNavigatePrevious,
-  onOpenChange,
-  open,
 }: RowEditorSidePanelProps): React.ReactElement {
   const hasMultipleRows = editedRowIds.length > 1;
   const title = mode === "insert" ? "Insert row" : editedRowIds.length > 1 ? "Edit rows" : "Edit row";
 
   return (
     <DetailPane
-      open={open}
-      onOpenChange={onOpenChange}
       title={
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{title}</p>

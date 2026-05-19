@@ -104,10 +104,12 @@ const columns: ColumnDef<LiveQueryRow>[] = [
 ];
 
 interface LiveQueryGridProps {
+  isListPaneOpen: boolean;
+  onToggleListPane: () => void;
   state: UseLiveQueryStateResult;
 }
 
-export function LiveQueryGrid({ state }: LiveQueryGridProps): React.ReactElement {
+export function LiveQueryGrid({ isListPaneOpen, onToggleListPane, state }: LiveQueryGridProps): React.ReactElement {
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const emptyStateCopy = getEmptyStateCopy(state.selectedTableName);
 
@@ -128,7 +130,9 @@ export function LiveQueryGrid({ state }: LiveQueryGridProps): React.ReactElement
         error={state.error}
         generatedAt={state.generatedAt}
         hasRows={state.rows.length > 0}
+        isListPaneOpen={isListPaneOpen}
         isRefreshing={state.isRefreshing}
+        onToggleListPane={onToggleListPane}
       />
       {state.error !== null && state.rows.length === 0 && state.isInitialLoading === false ? (
         <GridMessage title="Unable to load subscription telemetry" description={state.error} />

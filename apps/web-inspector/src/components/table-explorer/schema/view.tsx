@@ -5,12 +5,14 @@ import { useInspector } from "@/components/providers/inspectorProvider";
 import type { TableExplorerView } from "@/types/tableExplorer";
 
 interface SchemaViewProps {
+  isListPaneOpen: boolean;
+  onToggleListPane: () => void;
   onViewChange: (view: TableExplorerView) => Promise<void>;
   tableName: string;
   view: TableExplorerView;
 }
 
-export function SchemaView({ onViewChange, tableName, view }: SchemaViewProps): React.ReactElement {
+export function SchemaView({ isListPaneOpen, onToggleListPane, onViewChange, tableName, view }: SchemaViewProps): React.ReactElement {
   const { runtime } = useInspector();
   const tableSchema = runtime.wasmSchema?.[tableName] ?? null;
   const tablePermissions = runtime.storedPermissions?.permissions?.[tableName] ?? null;
@@ -19,7 +21,7 @@ export function SchemaView({ onViewChange, tableName, view }: SchemaViewProps): 
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
-      <ActionsBar view={view} onViewChange={onViewChange} />
+      <ActionsBar view={view} isListPaneOpen={isListPaneOpen} onToggleListPane={onToggleListPane} onViewChange={onViewChange} />
       <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden xl:grid-cols-2">
         <section className="flex min-h-0 flex-col overflow-hidden border-b border-border xl:border-r xl:border-b-0">
           <div className="flex h-10 shrink-0 items-center justify-between border-b border-border px-3">
