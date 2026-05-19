@@ -65,12 +65,19 @@ SelectSeparator.displayName = "SelectSeparator"
 function SelectTrigger({
   ref,
   className,
+  density,
+  size,
   ...props
-}: React.ComponentProps<typeof ShadSelectTrigger>) {
+}: React.ComponentProps<typeof ShadSelectTrigger> & {
+  density?: "sm" | "default" | "lg"
+}) {
+  const resolvedSize = density === "sm" ? "sm" : size;
+
   return (
     <ShadSelectTrigger
       ref={ref}
-      className={cn("rounded-xs", className)}
+      size={resolvedSize}
+      className={cn("rounded-xs", density === "lg" ? "h-8 text-sm md:text-sm" : null, className)}
       {...props}
     />
   )

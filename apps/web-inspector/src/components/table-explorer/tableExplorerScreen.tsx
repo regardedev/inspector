@@ -53,13 +53,14 @@ export function TableExplorerScreen({
       >
         <TableListPane
           filteredTables={filteredTables}
+          isOpen={isListPaneOpen}
           searchValue={tableSearch}
           selectedTableName={currentTableName}
           tables={tables}
           onSearchValueChange={setTableSearch}
         />
       </ResizablePanel>
-      <ResizableSeparator />
+      {isListPaneOpen === true ? <ResizableSeparator /> : null}
       <ResizablePanel>
         <SelectedTableView
           forcedDetailPaneMode={forcedDetailPaneMode}

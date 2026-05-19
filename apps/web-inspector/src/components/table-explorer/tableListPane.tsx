@@ -9,6 +9,7 @@ import { appRoutes } from "@/lib/navigation/appRoutes";
 
 interface TableListPaneProps {
   filteredTables: string[];
+  isOpen: boolean;
   searchValue: string;
   selectedTableName: string | null;
   tables: string[];
@@ -17,6 +18,7 @@ interface TableListPaneProps {
 
 export function TableListPane({
   filteredTables,
+  isOpen,
   searchValue,
   selectedTableName,
   tables,
@@ -26,7 +28,7 @@ export function TableListPane({
   const canBuildHref = currentConnectionId !== null && currentBranch !== null && currentSchemaHash !== null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-r border-border bg-background">
+    <div className={cn("flex h-full min-h-0 flex-col bg-background", isOpen === true ? "border-r border-border" : null)}>
       <div className="flex h-10 shrink-0 items-center border-b border-border px-3">
         <Search
           value={searchValue}

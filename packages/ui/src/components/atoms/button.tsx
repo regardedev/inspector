@@ -12,7 +12,7 @@ const buttonVariants = cva(
         outline:
           "bg-transparent text-foreground border-border hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:border-border aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground border-border hover:bg-secondary/90 hover:border-border aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
           "bg-transparent text-foreground hover:bg-accent hover:text-foreground aria-expanded:bg-accent aria-expanded:text-secondary-foreground dark:hover:bg-muted/50",
         destructive:
@@ -26,9 +26,9 @@ const buttonVariants = cva(
         sm: "h-6 gap-1 px-2 text-sm/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         lg: "h-8 gap-1 px-2.5 text-sm/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
         icon: "size-7 [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-xs": "size-5 rounded-xs [&_svg:not([class*='size-'])]:size-4 [&_svg]:stroke-[1.5]",
-        "icon-sm": "size-6 rounded-xs [&_svg:not([class*='size-'])]:size-4.5 [&_svg]:stroke-[1.5]",
-        "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4",
+        "icon-xs": "size-5 rounded-xs [&_svg:not([class*='size-'])]:size-3.5 [&_svg]:stroke-[1.5]",
+        "icon-sm": "size-6 rounded-xs [&_svg:not([class*='size-'])]:size-4 [&_svg]:stroke-[1.5]",
+        "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4.5",
       },
     },
     defaultVariants: {

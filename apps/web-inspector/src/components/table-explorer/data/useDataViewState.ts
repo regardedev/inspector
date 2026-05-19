@@ -15,6 +15,7 @@ import { useTableSelection } from "@/hooks/useTableSelection";
 import { appRoutes } from "@/lib/navigation/appRoutes";
 import { getFieldReadOnlyReason } from "@/lib/table-explorer/mutationParsing";
 import { getTableColumns } from "@/lib/table-explorer/tableSchema";
+import type { TableFilterClause } from "@/types/tableFilters";
 import type { DetailPaneMode, InspectorRowEditorMode, TableRowId } from "@/types/tableExplorer";
 
 interface UseDataViewStateOptions {
@@ -39,6 +40,7 @@ interface InsertRowSaveOptions {
 
 interface UseDataViewStateResult {
   fetchMore: () => void;
+  filters: TableFilterClause[];
   handleDelete: (() => Promise<void>) | undefined;
   handleEditSave: (values: Record<string, unknown>) => Promise<void>;
   handleInsertSave: (values: Record<string, unknown>, options?: InsertRowSaveOptions) => Promise<void>;
@@ -49,6 +51,7 @@ interface UseDataViewStateResult {
   rowEditor: DataViewRowEditorState;
   rowValues: Record<string, unknown> | null;
   schemaColumns: ColumnDescriptor[];
+  setFilters: (filters: TableFilterClause[]) => Promise<void>;
   table: Table<DynamicTableRow>;
 }
 
@@ -175,6 +178,8 @@ export function useDataViewState({
     hasMore: query.hasMore,
     isFetchingMore: query.isFetchingMore,
     fetchMore: query.fetchMore,
+    filters: searchState.filters,
+    setFilters: searchState.setFilters,
     schemaColumns,
     rowValues,
     rowEditor: {

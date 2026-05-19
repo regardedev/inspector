@@ -31,7 +31,7 @@ export function ActionsBar({
   const statusText = `${formatLastRefresh(generatedAt)}${isRefreshing === true ? " Refreshing..." : ""}`;
 
   return (
-    <div className="flex min-h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-3 py-2">
+    <div className="flex min-h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-2 py-2">
       <div className="flex items-center gap-2">
         <Button
           type="button"
@@ -39,7 +39,7 @@ export function ActionsBar({
           size="icon-sm"
           onClick={onToggleListPane}
         >
-          {isListPaneOpen === true ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+          {isListPaneOpen === true ? <PanelLeftClose /> : <PanelLeftOpen />}
           <span className="sr-only">Toggle live query table list</span>
         </Button>
       </div>

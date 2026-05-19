@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Button } from "@regarde/ui/button";
 import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@regarde/ui/resizablePanel";
 
@@ -7,6 +9,7 @@ import { DataGridToolbar } from "@/components/table-explorer/data/dataGridToolba
 import { EditRowForm } from "@/components/table-explorer/data/editRowForm";
 import { InsertRowForm } from "@/components/table-explorer/data/insertRowForm";
 import { RowEditorSidePanel } from "@/components/table-explorer/data/rowEditorSidePanel";
+import { TableFilter } from "@/components/table-explorer/data/tableFilter";
 import { useDataViewState } from "@/components/table-explorer/data/useDataViewState";
 import type { DetailPaneMode, TableExplorerView } from "@/types/tableExplorer";
 
@@ -27,6 +30,7 @@ export function DataView({
   tableName,
   view,
 }: DataViewProps): React.ReactElement {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const state = useDataViewState({
     forcedDetailPaneMode,
     tableName,
@@ -39,7 +43,10 @@ export function DataView({
           <ActionsBar
             view={view}
             isListPaneOpen={isListPaneOpen}
+            isFilterOpen={isFilterOpen}
+            filterCount={state.filters.length}
             onToggleListPane={onToggleListPane}
+            onFilterOpenChange={setIsFilterOpen}
             onViewChange={onViewChange}
             leftChildren={(
               <Button
@@ -60,6 +67,20 @@ export function DataView({
           >
             <DataGridToolbar table={state.table} />
           </ActionsBar>
+          {isFilterOpen === true ? (
+            <TableFilter
+              schemaColumns={state.schemaColumns}
+              filters={state.filters}
+              onFiltersChange={state.setFilters}
+              onClear={() => {
+                void state.setFilters([]);
+                setIsFilterOpen(false);
+              }}
+              onRequestClose={() => {
+                setIsFilterOpen(false);
+              }}
+            />
+          ) : null}
           <div className="min-h-0 flex-1 overflow-hidden">
             <DataGrid
               table={state.table}

@@ -12,9 +12,15 @@ const inputVariants = cva(
         ghost:
           "border-none bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
       },
+      density: {
+        default: null,
+        sm: "h-6 text-xs/relaxed md:text-xs/relaxed",
+        lg: "h-8 text-sm md:text-sm",
+      },
     },
     defaultVariants: {
       variant: "default",
+      density: "default",
     },
   }
 )
@@ -30,6 +36,7 @@ function Input({
   preSlot,
   postSlot,
   variant = "default",
+  density = "default",
   className,
   ...props
 }: InputProps) {
@@ -43,7 +50,7 @@ function Input({
       <ShadInput
         ref={ref}
         className={cn(
-          inputVariants({ variant }),
+          inputVariants({ variant, density }),
           preSlot && "pl-9",
           postSlot && "pr-9",
           className

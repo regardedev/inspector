@@ -29,7 +29,7 @@ const buttonGroupItemVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-6 w-6 text-[0.625rem] [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-6 w-6 text-[0.625rem] [&_svg:not([class*='size-'])]:size-3.5",
         default: "h-7 w-7 text-xs/relaxed [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-8 w-8 text-sm/relaxed [&_svg:not([class*='size-'])]:size-4",
       },
