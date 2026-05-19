@@ -33,11 +33,15 @@ interface DataViewRowEditorState {
   openInsert: () => void;
 }
 
+interface InsertRowSaveOptions {
+  keepOpen: boolean;
+}
+
 interface UseDataViewStateResult {
   fetchMore: () => void;
   handleDelete: (() => Promise<void>) | undefined;
   handleEditSave: (values: Record<string, unknown>) => Promise<void>;
-  handleInsertSave: (values: Record<string, unknown>) => Promise<void>;
+  handleInsertSave: (values: Record<string, unknown>, options?: InsertRowSaveOptions) => Promise<void>;
   handleRowEditorOpenChange: (open: boolean) => void;
   hasMore: boolean;
   isFetchingMore: boolean;

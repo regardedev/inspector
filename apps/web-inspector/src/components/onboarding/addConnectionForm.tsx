@@ -4,13 +4,15 @@ import { Input } from "@regarde/ui/input";
 
 import type { AddConnectionFormValues } from "./connectionFormTypes";
 
+type FormSubmitHandler = NonNullable<React.ComponentProps<"form">["onSubmit"]>;
+
 interface AddConnectionFormProps {
   canSubmit: boolean;
   errorMessage: string | null;
   formValues: AddConnectionFormValues;
   isSubmitting: boolean;
   onCancel: () => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onSubmit: FormSubmitHandler;
   onUpdateField: (field: keyof AddConnectionFormValues, value: string) => void;
 }
 

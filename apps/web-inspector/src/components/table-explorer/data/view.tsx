@@ -33,7 +33,7 @@ export function DataView({
   });
 
   return (
-    <ResizableGroup direction="horizontal" className="min-w-0 bg-background">
+    <ResizableGroup orientation="horizontal" className="min-w-0 bg-background">
       <ResizablePanel className="min-w-0 overflow-hidden">
         <div className="flex h-full flex-col overflow-hidden">
           <ActionsBar
@@ -80,6 +80,9 @@ export function DataView({
               editedRowIds={state.rowEditor.editedRowIds}
               activeRowIndex={state.rowEditor.activeRowIndex}
               activeRowId={state.rowEditor.activeRowId}
+              rowValues={state.rowValues}
+              schemaColumns={state.schemaColumns}
+              tableName={tableName}
               onNavigatePrevious={state.rowEditor.goToPreviousRow}
               onNavigateNext={state.rowEditor.goToNextRow}
             >

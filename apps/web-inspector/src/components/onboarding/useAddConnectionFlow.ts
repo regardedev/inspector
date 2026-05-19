@@ -14,6 +14,8 @@ import {
   type AddConnectionStep,
 } from "./connectionFormTypes";
 
+type FormSubmitHandler = NonNullable<React.ComponentProps<"form">["onSubmit"]>;
+
 export interface UseAddConnectionFlowResult {
   canSubmit: boolean;
   errorMessage: string | null;
@@ -21,7 +23,7 @@ export interface UseAddConnectionFlowResult {
   isSubmitting: boolean;
   schemaHashes: string[];
   step: AddConnectionStep;
-  fetchSchemas: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  fetchSchemas: FormSubmitHandler;
   goBackToForm: () => void;
   selectSchema: (schemaHash: string) => Promise<void>;
   updateField: (field: keyof AddConnectionFormValues, value: string) => void;
@@ -77,7 +79,7 @@ export function useAddConnectionFlow(): UseAddConnectionFlowResult {
     });
   };
 
-  const fetchSchemas = async (event: React.FormEvent<HTMLFormElement>) => {
+  const fetchSchemas: FormSubmitHandler = async (event) => {
     event.preventDefault();
 
     if (canSubmit === false || isSubmitting === true) {

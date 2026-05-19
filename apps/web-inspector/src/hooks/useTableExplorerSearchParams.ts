@@ -75,7 +75,7 @@ export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResu
   const updateSearch = async (updates: Partial<SearchValues>): Promise<void> => {
     await navigate({
       replace: true,
-      search: createNextSearch(updates),
+      search: () => createNextSearch(updates),
     });
   };
 

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import type { PanelImperativeHandle } from "react-resizable-panels";
+import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 
 import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@regarde/ui/resizablePanel";
 
@@ -12,8 +12,8 @@ export function LiveQueryScreen(): React.ReactElement {
   const listPaneRef = useRef<PanelImperativeHandle>(null);
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
-  const handleListPaneResize = (size: number) => {
-    setIsListPaneOpen(size > 0);
+  const handleListPaneResize = (panelSize: PanelSize) => {
+    setIsListPaneOpen(panelSize.inPixels > 0);
   };
 
   const handleToggleListPane = () => {
@@ -31,7 +31,7 @@ export function LiveQueryScreen(): React.ReactElement {
   };
 
   return (
-    <ResizableGroup direction="horizontal" className="min-w-0 bg-background">
+    <ResizableGroup orientation="horizontal" className="min-w-0 bg-background">
       <ResizablePanel
         className="min-w-0 overflow-hidden"
         panelRef={listPaneRef}

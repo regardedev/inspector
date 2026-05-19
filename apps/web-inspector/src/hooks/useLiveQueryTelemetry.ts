@@ -74,7 +74,7 @@ export function useLiveQueryTelemetry(): UseLiveQueryTelemetryResult {
   }));
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled: boolean = false;
     const nextCachedTelemetry =
       connectionConfig !== null ? (liveQueryTelemetryCache.get(connectionConfig.connectionKey) ?? null) : null;
 

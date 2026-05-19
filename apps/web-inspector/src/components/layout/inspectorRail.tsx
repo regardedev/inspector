@@ -37,8 +37,9 @@ export function InspectorRail(): React.ReactElement {
     >
       <nav aria-label="Inspector navigation" className="flex flex-1 flex-col items-center gap-1 px-1.5 py-2">
         <Tooltip>
-          <TooltipTrigger render={null}>
-            {routeParams !== null ? (
+          <TooltipTrigger
+            render={
+              routeParams !== null ? (
               <Button
                 variant={isTablesActive === true ? "default" : "ghost"}
                 size="icon-sm"
@@ -49,19 +50,21 @@ export function InspectorRail(): React.ReactElement {
                 <TableProperties />
                 <span className="sr-only">Tables</span>
               </Button>
-            ) : (
+              ) : (
               <Button type="button" variant="ghost" size="icon-sm" disabled>
                 <TableProperties />
                 <span className="sr-only">Tables</span>
               </Button>
-            )}
-          </TooltipTrigger>
+              )
+            }
+          />
           <TooltipContent side="right">Tables</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger render={null}>
-            {routeParams !== null ? (
+          <TooltipTrigger
+            render={
+              routeParams !== null ? (
               <Button
                 variant={isLiveQueryActive === true ? "default" : "ghost"}
                 size="icon-sm"
@@ -72,13 +75,14 @@ export function InspectorRail(): React.ReactElement {
                 <CodeXml />
                 <span className="sr-only">Live Query</span>
               </Button>
-            ) : (
+              ) : (
               <Button type="button" variant="ghost" size="icon-sm" disabled>
                 <CodeXml />
                 <span className="sr-only">Live Query</span>
               </Button>
-            )}
-          </TooltipTrigger>
+              )
+            }
+          />
           <TooltipContent side="right">Live Query</TooltipContent>
         </Tooltip>
       </nav>

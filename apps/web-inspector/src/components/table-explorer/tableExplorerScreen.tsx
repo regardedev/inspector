@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import type { PanelImperativeHandle } from "react-resizable-panels";
+import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 
 import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@regarde/ui/resizablePanel";
 
@@ -22,8 +22,8 @@ export function TableExplorerScreen({
   const listPaneRef = useRef<PanelImperativeHandle>(null);
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
-  const handleListPaneResize = (size: number) => {
-    setIsListPaneOpen(size > 0);
+  const handleListPaneResize = (panelSize: PanelSize) => {
+    setIsListPaneOpen(panelSize.inPixels > 0);
   };
 
   const handleToggleListPane = () => {
@@ -41,7 +41,7 @@ export function TableExplorerScreen({
   };
 
   return (
-    <ResizableGroup direction="horizontal" className="bg-background">
+    <ResizableGroup orientation="horizontal" className="bg-background">
       <ResizablePanel
         panelRef={listPaneRef}
         collapsible

@@ -33,6 +33,7 @@ export interface FieldState {
 }
 
 type BooleanFieldValue = "true" | "false" | "null";
+type FormSubmitHandler = NonNullable<React.ComponentProps<"form">["onSubmit"]>;
 
 interface UseRowEditorFieldsOptions {
   initialRowValues: Record<string, unknown>;
@@ -49,7 +50,7 @@ interface UseRowEditorFieldsResult {
   saveError: string | null;
   setFieldNull: (columnName: string, isNull: boolean) => void;
   setFieldText: (columnName: string, text: string) => void;
-  submit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  submit: FormSubmitHandler;
 }
 
 interface RowEditorFieldsProps {
@@ -148,7 +149,7 @@ export function useRowEditorFields({
     setErrors((currentErrors) => ({ ...currentErrors, [columnName]: "" }));
   };
 
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const submit: FormSubmitHandler = async (event) => {
     event.preventDefault();
     const nextErrors: Record<string, string> = {};
     const updates: Record<string, unknown> = {};
@@ -318,7 +319,9 @@ export function RowEditorFields({
                 <Select
                   value={fieldState.isNull === true ? "" : fieldState.text}
                   onValueChange={(nextValue) => {
-                    onFieldTextChange(column.name, nextValue);
+                    if (typeof nextValue === "string") {
+                      onFieldTextChange(column.name, nextValue);
+                    }
                   }}
                   disabled={fieldState.isNull === true}
                 >
