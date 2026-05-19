@@ -22,6 +22,10 @@ export function TableExplorerScreen({
   const listPaneRef = useRef<PanelImperativeHandle>(null);
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
+  const handleListPaneResize = (size: number) => {
+    setIsListPaneOpen(size > 0);
+  };
+
   const handleToggleListPane = () => {
     const panel = listPaneRef.current;
     if (panel === null) {
@@ -45,8 +49,7 @@ export function TableExplorerScreen({
         defaultSize={200}
         minSize={160}
         maxSize={360}
-        onCollapse={() => setIsListPaneOpen(false)}
-        onExpand={() => setIsListPaneOpen(true)}
+        onResize={handleListPaneResize}
       >
         <TableListPane
           filteredTables={filteredTables}

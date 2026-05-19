@@ -141,23 +141,27 @@ export function LiveQueryGrid({ isListPaneOpen, onToggleListPane, state }: LiveQ
       ) : state.filteredRows.length === 0 ? (
         <GridMessage title={emptyStateCopy.title} description={emptyStateCopy.description} />
       ) : (
-        <DataGrid
-          table={table}
-          recordCount={state.filteredRows.length}
-          emptyMessage="No active subscriptions"
-          tableLayout={{
-            headerSticky: true,
-            width: "auto",
-            cellBorder: true,
-          }}
-          className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
-        >
-          <DataGridContainer className="rounded-none border-0">
-            <DataGridScrollArea orientation="both">
-              <DataGridTable />
-            </DataGridScrollArea>
-          </DataGridContainer>
-        </DataGrid>
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
+          <DataGrid
+            table={table}
+            recordCount={state.filteredRows.length}
+            emptyMessage="No active subscriptions"
+            tableLayout={{
+              headerSticky: true,
+              width: "auto",
+              cellBorder: true,
+            }}
+            className="inspector-data-grid flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background"
+          >
+            <DataGridContainer className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-none border-0">
+              <div className="relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
+                <DataGridScrollArea className="app-scrollbar h-full min-h-0 min-w-0 flex-1" orientation="both">
+                  <DataGridTable />
+                </DataGridScrollArea>
+              </div>
+            </DataGridContainer>
+          </DataGrid>
+        </div>
       )}
     </div>
   );

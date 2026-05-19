@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { NewConnectionSheet } from "@/components/onboarding/newConnectionSheet";
+import { AddConnectionPane } from "@/components/onboarding/addConnectionPane";
 
 export const Route = createFileRoute("/conn/new")({
-  component: NewConnectionSheet,
+  component: AddConnectionPane,
 });

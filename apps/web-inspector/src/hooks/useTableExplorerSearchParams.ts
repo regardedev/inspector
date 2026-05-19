@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import {
   parseFiltersFromSearchParam,
@@ -35,6 +35,7 @@ function parseSortDirection(value: string | undefined): TableSortDirection {
 }
 
 export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResult {
+  const navigate = useNavigate();
   const search = useSearch({ strict: false }) as SearchValues;
 
   const state = useMemo<TableExplorerSearchState>(() => {
@@ -55,13 +56,13 @@ export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResu
       ...updates,
     };
 
-    if (nextSearch.view === "data") {
+    if (nextSearch.view === "data" || nextSearch.view === undefined) {
       delete nextSearch.view;
     }
-    if (nextSearch.sort === "id") {
+    if (nextSearch.sort === "id" || nextSearch.sort === undefined) {
       delete nextSearch.sort;
     }
-    if (nextSearch.dir === "asc") {
+    if (nextSearch.dir === "asc" || nextSearch.dir === undefined) {
       delete nextSearch.dir;
     }
     if (nextSearch.filters === null || nextSearch.filters === undefined) {
@@ -71,24 +72,23 @@ export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResu
     return nextSearch;
   };
 
+  const updateSearch = async (updates: Partial<SearchValues>): Promise<void> => {
+    await navigate({
+      replace: true,
+      search: createNextSearch(updates),
+    });
+  };
+
   return {
     ...state,
     setView: async (view) => {
-      window.history.replaceState(null, "", `?${new URLSearchParams(createNextSearch({ view })).toString()}`);
+      await updateSearch({ view });
     },
     setFilters: async (filters) => {
-      window.history.replaceState(
-        null,
-        "",
-        `?${new URLSearchParams(createNextSearch({ filters: serializeFiltersToSearchParam(filters) ?? undefined })).toString()}`,
-      );
+      await updateSearch({ filters: serializeFiltersToSearchParam(filters) ?? undefined });
     },
     setSorting: async (sortColumn, sortDirection) => {
-      window.history.replaceState(
-        null,
-        "",
-        `?${new URLSearchParams(createNextSearch({ sort: sortColumn, dir: sortDirection })).toString()}`,
-      );
+      await updateSearch({ sort: sortColumn, dir: sortDirection });
     },
   };
 }

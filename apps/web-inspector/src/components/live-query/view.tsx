@@ -12,6 +12,10 @@ export function LiveQueryScreen(): React.ReactElement {
   const listPaneRef = useRef<PanelImperativeHandle>(null);
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
+  const handleListPaneResize = (size: number) => {
+    setIsListPaneOpen(size > 0);
+  };
+
   const handleToggleListPane = () => {
     const panel = listPaneRef.current;
     if (panel === null) {
@@ -27,16 +31,16 @@ export function LiveQueryScreen(): React.ReactElement {
   };
 
   return (
-    <ResizableGroup direction="horizontal" className="bg-background">
+    <ResizableGroup direction="horizontal" className="min-w-0 bg-background">
       <ResizablePanel
+        className="min-w-0 overflow-hidden"
         panelRef={listPaneRef}
         collapsible
         collapsedSize={0}
         defaultSize={200}
         minSize={160}
         maxSize={360}
-        onCollapse={() => setIsListPaneOpen(false)}
-        onExpand={() => setIsListPaneOpen(true)}
+        onResize={handleListPaneResize}
       >
         <LiveQueryListPane
           isInitialLoading={state.isInitialLoading}
@@ -48,7 +52,7 @@ export function LiveQueryScreen(): React.ReactElement {
         />
       </ResizablePanel>
       <ResizableSeparator />
-      <ResizablePanel>
+      <ResizablePanel className="min-w-0 overflow-hidden">
         <LiveQueryGrid state={state} isListPaneOpen={isListPaneOpen} onToggleListPane={handleToggleListPane} />
       </ResizablePanel>
     </ResizableGroup>

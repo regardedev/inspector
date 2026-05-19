@@ -22,6 +22,7 @@ export function CopyPopover({
       <PopoverTrigger
         openOnHover={true}
         closeDelay={200}
+        nativeButton={false}
         render={<div className={cn("block w-full cursor-pointer", className)}>{children}</div>}
       />
       <PopoverContent
