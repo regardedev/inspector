@@ -163,16 +163,19 @@ DropdownMenuSubContent.displayName = "DropdownMenuSubContent"
 const DropdownMenuCheckboxItem = ({
   ref,
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof ShadDropdownMenuCheckboxItem>) => (
   <ShadDropdownMenuCheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default items-center gap-1.5 rounded-xs py-1 pr-8 pl-1.5 text-xs outline-none select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+      "relative flex min-w-0 cursor-default items-center gap-1.5 rounded-xs py-1 pr-8 pl-1.5 text-xs outline-none select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
       className
     )}
     {...props}
-  />
+  >
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+  </ShadDropdownMenuCheckboxItem>
 )
 DropdownMenuCheckboxItem.displayName = "DropdownMenuCheckboxItem"
 
@@ -186,16 +189,19 @@ DropdownMenuRadioGroup.displayName = "DropdownMenuRadioGroup"
 const DropdownMenuRadioItem = ({
   ref,
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof ShadDropdownMenuRadioItem>) => (
   <ShadDropdownMenuRadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-xs outline-none select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+      "relative flex min-w-0 cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-xs outline-none select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
       className
     )}
     {...props}
-  />
+  >
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+  </ShadDropdownMenuRadioItem>
 )
 DropdownMenuRadioItem.displayName = "DropdownMenuRadioItem"
 

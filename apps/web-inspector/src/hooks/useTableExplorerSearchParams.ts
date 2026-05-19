@@ -6,6 +6,7 @@ import {
   parseFiltersFromSearchParam,
   serializeFiltersToSearchParam,
 } from "@/lib/table-explorer/filterParsing";
+import { appRoutes } from "@/lib/navigation/appRoutes";
 import type { TableFilterClause } from "@/types/tableFilters";
 import type {
   DetailPaneMode,
@@ -61,7 +62,7 @@ function parseRowId(value: string | null | undefined): TableRowId | null {
 }
 
 export function useTableExplorerSearchParams(): UseTableExplorerSearchParamsResult {
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: appRoutes.table });
   const search = useSearch({ strict: false }) as SearchValues;
 
   const state = useMemo<TableExplorerSearchState>(() => {
