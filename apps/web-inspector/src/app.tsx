@@ -2,6 +2,7 @@ import "./index.css";
 
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
+import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@regarde/ui/ui/tooltip";
 
 import { routeTree } from "./routeTree.gen";
@@ -25,10 +26,12 @@ declare module "@tanstack/react-router" {
 const rootElement = document.getElementById("root");
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
-    <TooltipProvider>
-      <StrictMode>
-        <RouterProvider router={router} />
-      </StrictMode>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <TooltipProvider>
+        <StrictMode>
+          <RouterProvider router={router} />
+        </StrictMode>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }

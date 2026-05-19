@@ -63,7 +63,7 @@ export function TableListPane({
                     <div
                       key={tableName}
                       className={cn(
-                        "flex min-h-8 items-center rounded-xs px-3 text-sm text-foreground",
+                        "flex min-h-7 items-center rounded-xs px-3 text-sm text-foreground",
                         isActive === true ? "bg-muted" : "hover:bg-muted/60",
                       )}
                     >
@@ -78,7 +78,7 @@ export function TableListPane({
                     to={appRoutes.table}
                     params={tableParams}
                     className={cn(
-                      "flex min-h-8 items-center rounded-xs px-3 text-sm text-foreground",
+                      "flex min-h-7 items-center rounded-xs px-3 text-sm text-foreground",
                       isActive === true ? "bg-muted" : "hover:bg-muted/60",
                     )}
                   >

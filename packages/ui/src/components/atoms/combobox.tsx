@@ -42,10 +42,10 @@ const ComboboxInput = ({
   className,
   ...props
 }: React.ComponentProps<typeof ShadComboboxInput>) => (
-  <ShadComboboxInput
-    ref={ref}
-    className={cn(
-      "w-full bg-transparent border-transparent shadow-none ring-0 [&_svg]:hidden",
+    <ShadComboboxInput
+      ref={ref}
+      className={cn(
+        "w-full border-transparent bg-muted rounded-xs shadow-none ring-0 [&_svg]:hidden",
       "[&_[data-slot=input-group-control]]:text-sm md:[&_[data-slot=input-group-control]]:text-sm",
       "[&_[data-slot=input-group-control]]:leading-5 md:[&_[data-slot=input-group-control]]:leading-5",
       "focus-within:border-transparent focus-within:ring-0",
@@ -63,11 +63,11 @@ const ComboboxContent = ({
   className,
   ...props
 }: React.ComponentProps<typeof ShadComboboxContent>) => (
-  <ShadComboboxContent
-    ref={ref}
-    className={cn("rounded-xs ring-foreground/10", className)}
-    {...props}
-  />
+    <ShadComboboxContent
+      ref={ref}
+      className={cn("rounded-xs border border-border shadow-lg ring-0", className)}
+      {...props}
+    />
 )
 ComboboxContent.displayName = "ComboboxContent"
 

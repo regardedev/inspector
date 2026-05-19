@@ -81,7 +81,7 @@ export function EditRowForm({
               Cancel
             </Button>
           ) : null}
-          <Button type="submit" variant="secondary" size="sm" loading={rowEditor.isSaving === true}>
+          <Button type="submit" variant="default" size="sm" loading={rowEditor.isSaving === true}>
             Save
           </Button>
         </div>

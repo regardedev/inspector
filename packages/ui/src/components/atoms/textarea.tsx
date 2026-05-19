@@ -10,7 +10,7 @@ function Textarea({ ref, className, ...props }: TextareaProps) {
     <ShadTextarea
       ref={ref}
       className={cn(
-        "bg-input border-border text-foreground rounded-xs focus-visible:ring-0",
+        "border-input bg-input/20 text-foreground rounded-xs focus-visible:ring-0 dark:bg-input/30",
         className
       )}
       {...props}

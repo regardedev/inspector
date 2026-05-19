@@ -1,5 +1,6 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { CodeXml, TableProperties } from "lucide-react";
+import { CodeXml, Moon, Sun, TableProperties } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@regarde/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@regarde/ui/tooltip";
@@ -12,6 +13,8 @@ import { appRoutes } from "@/lib/navigation/appRoutes";
 export function InspectorRail(): React.ReactElement {
   const matchRoute = useMatchRoute();
   const { currentBranch, currentConnectionId, currentSchemaHash } = useInspector();
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDarkTheme = resolvedTheme === "dark";
 
   const routeParams =
     currentConnectionId !== null && currentBranch !== null && currentSchemaHash !== null
@@ -35,14 +38,14 @@ export function InspectorRail(): React.ReactElement {
         inspectorRailWidthClassName,
       )}
     >
-      <nav aria-label="Inspector navigation" className="flex flex-1 flex-col items-center gap-1 px-1.5 py-2">
+      <nav aria-label="Inspector navigation" className="flex flex-1 flex-col items-center gap-1 px-1.5 py-9.5">
         <Tooltip>
           <TooltipTrigger
             render={
               routeParams !== null ? (
               <Button
                 variant={isTablesActive === true ? "default" : "ghost"}
-                size="icon-sm"
+                size="icon-lg"
                 nativeButton={false}
                 render={<Link to={appRoutes.tables} params={routeParams} />}
                 aria-current={isTablesActive === true ? "page" : undefined}
@@ -51,7 +54,7 @@ export function InspectorRail(): React.ReactElement {
                 <span className="sr-only">Tables</span>
               </Button>
               ) : (
-              <Button type="button" variant="ghost" size="icon-sm" disabled>
+              <Button type="button" variant="ghost" size="icon-lg" disabled>
                 <TableProperties />
                 <span className="sr-only">Tables</span>
               </Button>
@@ -67,7 +70,7 @@ export function InspectorRail(): React.ReactElement {
               routeParams !== null ? (
               <Button
                 variant={isLiveQueryActive === true ? "default" : "ghost"}
-                size="icon-sm"
+                size="icon-lg"
                 nativeButton={false}
                 render={<Link to={appRoutes.liveQuery} params={routeParams} />}
                 aria-current={isLiveQueryActive === true ? "page" : undefined}
@@ -76,7 +79,7 @@ export function InspectorRail(): React.ReactElement {
                 <span className="sr-only">Live Query</span>
               </Button>
               ) : (
-              <Button type="button" variant="ghost" size="icon-sm" disabled>
+              <Button type="button" variant="ghost" size="icon-lg" disabled>
                 <CodeXml />
                 <span className="sr-only">Live Query</span>
               </Button>
@@ -86,6 +89,26 @@ export function InspectorRail(): React.ReactElement {
           <TooltipContent side="right">Live Query</TooltipContent>
         </Tooltip>
       </nav>
+      <div className="flex shrink-0 flex-col items-center px-1.5 py-2">
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => {
+                  setTheme(isDarkTheme === true ? "light" : "dark");
+                }}
+              >
+                {isDarkTheme === true ? <Sun /> : <Moon />}
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            }
+          />
+          <TooltipContent side="right">{isDarkTheme === true ? "Light theme" : "Dark theme"}</TooltipContent>
+        </Tooltip>
+      </div>
     </aside>
   );
 }

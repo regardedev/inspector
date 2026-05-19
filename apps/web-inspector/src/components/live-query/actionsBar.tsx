@@ -35,8 +35,8 @@ export function ActionsBar({
       <div className="flex items-center gap-2">
         <Button
           type="button"
-          variant="ghost"
-          size="icon-sm"
+          variant="outline"
+          size="icon"
           onClick={onToggleListPane}
         >
           {isListPaneOpen === true ? <PanelLeftClose /> : <PanelLeftOpen />}

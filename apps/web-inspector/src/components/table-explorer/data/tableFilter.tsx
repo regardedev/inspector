@@ -275,7 +275,7 @@ export function TableFilter({
                     });
                   }}
                 >
-                  <SelectTrigger density="lg" className="w-52">
+                  <SelectTrigger density="lg" className="w-36">
                     <SelectValue placeholder="column" />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,7 +304,7 @@ export function TableFilter({
                     });
                   }}
                 >
-                  <SelectTrigger density="lg" className="w-52">
+                  <SelectTrigger density="lg" className="w-36">
                     <SelectValue placeholder="operator" />
                   </SelectTrigger>
                   <SelectContent>
@@ -375,13 +375,13 @@ export function TableFilter({
           })}
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Button type="button" variant="outline" size="default" onClick={onClear}>
             Clear
           </Button>
           <Button
             type="button"
             variant="secondary"
-            size="sm"
+            size="default"
             disabled={filterableColumns.length === 0}
             onClick={() => {
               const firstColumn = filterableColumns[0] ?? null;

@@ -51,8 +51,8 @@ export function DataView({
             leftChildren={(
               <Button
                 type="button"
-                variant="secondary"
-                size="sm"
+                variant="default"
+                size="default"
                 onClick={() => {
                   if (state.rowEditor.isOpen === true && state.rowEditor.mode === "insert") {
                     state.handleRowEditorOpenChange(false);

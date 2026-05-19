@@ -45,7 +45,7 @@ export function LiveQueryListPane({
               onSelectedTableNameChange(null);
             }}
             className={cn(
-              "flex min-h-8 w-full items-center justify-between rounded-xs px-3 text-sm text-foreground",
+              "flex min-h-7 w-full items-center justify-between rounded-xs px-3 text-sm text-foreground",
               selectedTableName === null ? "bg-muted" : "hover:bg-muted/60",
             )}
           >
@@ -65,7 +65,7 @@ export function LiveQueryListPane({
                     onSelectedTableNameChange(tableItem.tableName);
                   }}
                   className={cn(
-                    "flex min-h-8 w-full items-center justify-between rounded-xs px-3 text-sm text-foreground",
+                    "flex min-h-7 w-full items-center justify-between rounded-xs px-3 text-sm text-foreground",
                     isActive === true ? "bg-muted" : "hover:bg-muted/60",
                   )}
                 >

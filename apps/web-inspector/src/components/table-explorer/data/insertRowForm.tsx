@@ -80,7 +80,7 @@ function InsertRowFormFields({
               Cancel
             </Button>
           ) : null}
-          <Button type="submit" variant="secondary" size="sm" loading={rowEditor.isSaving === true}>
+          <Button type="submit" variant="default" size="sm" loading={rowEditor.isSaving === true}>
             Insert
           </Button>
         </div>

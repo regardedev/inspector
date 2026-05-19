@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary",
+        default: "border-primary bg-primary/90 text-primary-foreground hover:border-primary hover:bg-primary",
         outline:
           "bg-transparent text-foreground border-border hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
         secondary:
@@ -21,13 +21,13 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "h-7 gap-1 px-2 text-sm/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+          "h-7 gap-1 px-3 text-sm/relaxed has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 [&_svg:not([class*='size-'])]:size-4",
         xs: "h-5 gap-1 rounded-xs px-2 text-[0.625rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-2.5",
         sm: "h-6 gap-1 px-2 text-sm/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        lg: "h-8 gap-1 px-2.5 text-sm/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
-        icon: "size-7 [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-xs": "size-5 rounded-xs [&_svg:not([class*='size-'])]:size-3.5 [&_svg]:stroke-[1.5]",
-        "icon-sm": "size-6 rounded-xs [&_svg:not([class*='size-'])]:size-4 [&_svg]:stroke-[1.5]",
+        lg: "h-8 gap-1 px-3.5 text-sm/relaxed has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 [&_svg:not([class*='size-'])]:size-4.5",
+        icon: "size-7 [&_svg:not([class*='size-'])]:size-4 [&_svg]:stroke-[1.5]",
+        "icon-xs": "size-5 rounded-xs [&_svg:not([class*='size-'])]:size-3 [&_svg]:stroke-[1.5]",
+        "icon-sm": "size-6 rounded-xs [&_svg:not([class*='size-'])]:size-3.5 [&_svg]:stroke-[1.5]",
         "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4.5",
       },
     },
