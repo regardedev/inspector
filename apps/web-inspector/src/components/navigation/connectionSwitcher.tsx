@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 
 import { useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@regarde/ui/button";
 import {
   Combobox,
   ComboboxContent,
@@ -12,8 +11,9 @@ import {
   ComboboxList,
   ComboboxTrigger,
   ComboboxSeparator,
-  useComboboxAnchor,
 } from "@regarde/ui/combobox";
+import { Button } from "@regarde/ui/button";
+import { cn } from "@regarde/ui/lib/utils";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
 import {
@@ -24,9 +24,9 @@ import {
 import { appRoutes } from "@/lib/navigation/appRoutes";
 
 interface ConnectionSwitcherProps {
+  placement?: "default" | "header";
   triggerLabel?: string;
-  triggerClassName?: string;
-  contentClassName?: string;
+  width?: "auto" | "md";
 }
 
 function sortConnections(
@@ -40,15 +40,14 @@ function sortConnections(
 }
 
 export function ConnectionSwitcher({
+  placement = "default",
   triggerLabel,
-  triggerClassName,
-  contentClassName,
+  width = "auto",
 }: ConnectionSwitcherProps = {}): React.ReactElement {
   const { connections, currentConnectionId, openConnection } = useInspector();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const anchorRef = useComboboxAnchor();
 
   const orderedConnections = useMemo(
     () => sortConnections(connections, currentConnectionId),
@@ -60,11 +59,11 @@ export function ConnectionSwitcher({
     (activeConnection !== null && activeConnection.id === currentConnectionId
       ? getConnectionDisplayName(activeConnection)
       : "Open connections");
-  const resolvedTriggerClassName =
-    triggerClassName !== undefined
-      ? `justify-start gap-2 rounded-xs ${triggerClassName}`
-      : "justify-start gap-2 rounded-xs";
-
+  const triggerClassName = cn(
+    "justify-start gap-2 rounded-xs",
+    placement === "header" ? "h-7 px-1 text-secondary-foreground" : null,
+    width === "md" ? "max-w-[280px]" : null,
+  );
   const filteredConnections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     if (normalizedQuery.length === 0) {
@@ -89,18 +88,10 @@ export function ConnectionSwitcher({
         }
       }}
     >
-      <div ref={anchorRef} className="inline-flex shrink-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={true}
-          className={resolvedTriggerClassName}
-          render={<ComboboxTrigger />}
-        >
-          <span className="truncate">{resolvedTriggerLabel}</span>
-        </Button>
-      </div>
-      <ComboboxContent anchor={anchorRef} className={contentClassName ?? "w-[320px] p-0"}>
+      <Button variant="ghost" size="sm" nativeButton={true} className={triggerClassName} render={<ComboboxTrigger />}>
+        <span className="truncate">{resolvedTriggerLabel}</span>
+      </Button>
+      <ComboboxContent className="w-[320px] p-0">
         <div className="sticky top-0 z-10 bg-popover p-1">
           <ComboboxInput
             value={query}

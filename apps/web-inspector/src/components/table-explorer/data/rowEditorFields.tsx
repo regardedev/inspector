@@ -62,7 +62,6 @@ interface RowEditorFieldsProps {
   mode: DetailPaneMode;
   onFieldNullChange: (columnName: string, isNull: boolean) => void;
   onFieldTextChange: (columnName: string, text: string) => void;
-  showIdField?: boolean;
 }
 
 function getInitialFieldState(value: unknown, mode: DetailPaneMode, column: ColumnDescriptor): FieldState {
@@ -217,13 +216,13 @@ export function RowEditorFields({
   mode,
   onFieldNullChange,
   onFieldTextChange,
-  showIdField = true,
 }: RowEditorFieldsProps): React.ReactElement {
   const { currentBranch, currentConnectionId, currentSchemaHash } = useInspector();
+  const shouldShowIdField = mode === "insert";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6 pr-1">
-      {showIdField === true ? (
+      {shouldShowIdField === true ? (
         <Field>
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">

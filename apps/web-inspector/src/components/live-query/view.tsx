@@ -13,7 +13,10 @@ export function LiveQueryScreen(): React.ReactElement {
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
   const handleListPaneResize = (panelSize: PanelSize) => {
-    setIsListPaneOpen(panelSize.inPixels > 0);
+    const nextIsListPaneOpen = panelSize.inPixels > 0;
+    setIsListPaneOpen((currentIsListPaneOpen) =>
+      currentIsListPaneOpen === nextIsListPaneOpen ? currentIsListPaneOpen : nextIsListPaneOpen,
+    );
   };
 
   const handleToggleListPane = () => {
@@ -44,10 +47,10 @@ export function LiveQueryScreen(): React.ReactElement {
       >
         <LiveQueryListPane
           isInitialLoading={state.isInitialLoading}
-          listSearchValue={state.listSearchValue}
+          searchValue={state.listSearchValue}
           selectedTableName={state.selectedTableName}
           visibleTableItems={state.visibleTableItems}
-          onListSearchValueChange={state.setListSearchValue}
+          onSearchValueChange={state.setListSearchValue}
           onSelectedTableNameChange={state.setSelectedTableName}
         />
       </ResizablePanel>

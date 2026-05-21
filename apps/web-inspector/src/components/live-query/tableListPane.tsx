@@ -7,33 +7,33 @@ import type { LiveQueryTableItem } from "@/types/liveQuery";
 
 interface LiveQueryListPaneProps {
   isInitialLoading: boolean;
-  listSearchValue: string;
+  searchValue: string;
   selectedTableName: string | null;
   visibleTableItems: LiveQueryTableItem[];
-  onListSearchValueChange: (value: string) => void;
+  onSearchValueChange: (value: string) => void;
   onSelectedTableNameChange: (value: string | null) => void;
 }
 
 export function LiveQueryListPane({
   isInitialLoading,
-  listSearchValue,
+  searchValue,
   selectedTableName,
   visibleTableItems,
-  onListSearchValueChange,
+  onSearchValueChange,
   onSelectedTableNameChange,
 }: LiveQueryListPaneProps): React.ReactElement {
   const shouldShowEmptyState = isInitialLoading === false && visibleTableItems.length === 0;
   const emptyStateDescription =
-    listSearchValue.trim().length === 0 ? "No active server subscriptions found." : "Try a different table search.";
+    searchValue.trim().length === 0 ? "No active server subscriptions found." : "Try a different table search.";
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       <div className="flex h-10 shrink-0 items-center border-b border-border px-3">
         <Search
           aria-label="Search live query tables"
-          value={listSearchValue}
+          value={searchValue}
           onChange={(event) => {
-            onListSearchValueChange(event.currentTarget.value);
+            onSearchValueChange(event.currentTarget.value);
           }}
           placeholder="Search tables..."
         />

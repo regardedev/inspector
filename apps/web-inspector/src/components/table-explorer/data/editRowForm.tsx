@@ -51,7 +51,6 @@ export function EditRowForm({
           mode="edit"
           onFieldNullChange={rowEditor.setFieldNull}
           onFieldTextChange={rowEditor.setFieldText}
-          showIdField={false}
         />
 
         {rowEditor.saveError !== null ? <p className="text-sm text-destructive">{rowEditor.saveError}</p> : null}

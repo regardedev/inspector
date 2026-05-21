@@ -8,24 +8,24 @@ import { DataGridColumnVisibility } from "@regarde/ui/dataGrid";
 interface DataGridToolbarProps {
   infiniteScrollEnabled?: boolean;
   onInfiniteScrollEnabledChange?: (enabled: boolean) => void;
-  showInfiniteScrollToggle?: boolean;
   table: Table<DynamicTableRow>;
 }
 
 export function DataGridToolbar({
   infiniteScrollEnabled = true,
   onInfiniteScrollEnabledChange,
-  showInfiniteScrollToggle = false,
   table,
 }: DataGridToolbarProps): React.ReactElement {
+  const canToggleInfiniteScroll = onInfiniteScrollEnabledChange !== undefined;
+
   return (
     <>
-      {showInfiniteScrollToggle === true ? (
+      {canToggleInfiniteScroll === true ? (
         <label className="flex items-center gap-2 text-sm text-muted-foreground">
           <Checkbox
             checked={infiniteScrollEnabled}
             onCheckedChange={(checked) => {
-              onInfiniteScrollEnabledChange?.(checked);
+              onInfiniteScrollEnabledChange(checked);
             }}
           />
           Infinite scroll

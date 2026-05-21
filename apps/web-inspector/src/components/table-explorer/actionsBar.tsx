@@ -1,3 +1,5 @@
+import { Children, isValidElement } from "react";
+
 import { Layers, ListFilter, PanelLeftClose, PanelLeftOpen, TableIcon } from "lucide-react";
 
 import { Button } from "@regarde/ui/button";
@@ -12,25 +14,51 @@ interface ActionsBarProps {
   filterCount?: number;
   isListPaneOpen: boolean;
   isFilterOpen?: boolean;
-  leftChildren?: React.ReactNode;
   onFilterOpenChange?: (open: boolean) => void;
   onToggleListPane: () => void;
   onViewChange: (view: TableExplorerView) => void;
   view: TableExplorerView;
 }
 
-export function ActionsBar({
+interface ActionsBarSectionProps {
+  children?: React.ReactNode;
+}
+
+function ActionsBarLeading({ children }: ActionsBarSectionProps): React.ReactNode {
+  return children;
+}
+
+function ActionsBarTrailing({ children }: ActionsBarSectionProps): React.ReactNode {
+  return children;
+}
+
+function ActionsBarRoot({
   children,
   filterCount = 0,
   isFilterOpen = false,
   isListPaneOpen,
-  leftChildren,
   onFilterOpenChange,
   onToggleListPane,
   onViewChange,
   view,
 }: ActionsBarProps): React.ReactElement {
   const canShowFilters = onFilterOpenChange !== undefined;
+  const leadingChildren: React.ReactNode[] = [];
+  const trailingChildren: React.ReactNode[] = [];
+
+  Children.forEach(children, (child) => {
+    if (isValidElement<ActionsBarSectionProps>(child) === true && child.type === ActionsBarLeading) {
+      leadingChildren.push(child.props.children);
+      return;
+    }
+
+    if (isValidElement<ActionsBarSectionProps>(child) === true && child.type === ActionsBarTrailing) {
+      trailingChildren.push(child.props.children);
+      return;
+    }
+
+    trailingChildren.push(child);
+  });
 
   return (
     <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-3">
@@ -96,9 +124,14 @@ export function ActionsBar({
             <span className="sr-only">Toggle filters</span>
           </Button>
         ) : null}
-        {leftChildren}
+        {leadingChildren}
       </div>
-      <div className="flex items-center gap-2">{children}</div>
+      <div className="flex items-center gap-2">{trailingChildren}</div>
     </div>
   );
 }
+
+export const ActionsBar = Object.assign(ActionsBarRoot, {
+  Leading: ActionsBarLeading,
+  Trailing: ActionsBarTrailing,
+});

@@ -16,7 +16,10 @@ export function TableExplorerScreen(): React.ReactElement {
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
   const handleListPaneResize = (panelSize: PanelSize) => {
-    setIsListPaneOpen(panelSize.inPixels > 0);
+    const nextIsListPaneOpen = panelSize.inPixels > 0;
+    setIsListPaneOpen((currentIsListPaneOpen) =>
+      currentIsListPaneOpen === nextIsListPaneOpen ? currentIsListPaneOpen : nextIsListPaneOpen,
+    );
   };
 
   const handleToggleListPane = () => {

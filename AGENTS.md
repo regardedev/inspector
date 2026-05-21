@@ -35,6 +35,18 @@
 - Atom props should derive from `React.ComponentProps<typeof ShadComponent>`; React 19 refs are already included in those props.
 - Use `cn()` for class merging in atoms; reserve `twMerge()` for CVA variant definitions.
 
+## React component patterns
+
+- Name props relative to the component context. Avoid repeating the component name in props, e.g. prefer `isOpen` and `onClose` on a dialog over `isDialogOpen` and `onDialogClose`.
+- Keep parent state names descriptive when needed, but keep component APIs terse when the component already supplies the context.
+- Avoid adding boolean props when behavior can be derived from existing props. For example, presence of `onClose` can define whether a dialog is closable.
+- Prefer enum props over multiple mutually exclusive booleans. Use `variant="primary"` instead of `isPrimary`/`isSecondary` to make impossible states unrepresentable.
+- When enum props also need arbitrary strings, preserve autocomplete with unions such as `"accent" | "warning" | (string & {})`.
+- Prefer composition and compound components over broad `data` props or many slot/className override props when consumers need control over rendered parts.
+- Wrap low-level primitive parts into higher-level design-system components, but keep escape hatches available through composition rather than prop bloat.
+- For compound components, use the `Object.assign(Root, { Part })` export pattern when it improves call-site clarity.
+- Use direct DOM manipulation through refs for high-frequency interaction updates only when no other interface state depends on those values.
+
 ## TypeScript conventions
 
 - Always use explicit boolean comparisons: `=== true` and `=== false`. Do not use implicit truthiness such as `if (value)`, `if (!value)`, or `!!value`.

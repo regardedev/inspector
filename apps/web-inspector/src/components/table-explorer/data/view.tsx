@@ -45,7 +45,8 @@ export function DataView({
             onToggleListPane={onToggleListPane}
             onFilterOpenChange={setIsFilterOpen}
             onViewChange={onViewChange}
-            leftChildren={(
+          >
+            <ActionsBar.Leading>
               <Button
                 type="button"
                 variant="default"
@@ -60,9 +61,10 @@ export function DataView({
               >
                 Insert row
               </Button>
-            )}
-          >
-            <DataGridToolbar table={state.table} />
+            </ActionsBar.Leading>
+            <ActionsBar.Trailing>
+              <DataGridToolbar table={state.table} />
+            </ActionsBar.Trailing>
           </ActionsBar>
           {isFilterOpen === true ? (
             <TableFilter

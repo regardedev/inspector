@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { HashIcon } from "lucide-react";
 
-import { Button } from "@regarde/ui/button";
 import {
   Combobox,
   ComboboxContent,
@@ -11,15 +10,16 @@ import {
   ComboboxList,
   ComboboxTrigger,
   ComboboxSeparator,
-  useComboboxAnchor,
 } from "@regarde/ui/combobox";
+import { Button } from "@regarde/ui/button";
+import { cn } from "@regarde/ui/lib/utils";
 
 import { useInspector } from "@/components/providers/inspectorProvider";
 
 interface SchemaSwitcherProps {
+  placement?: "default" | "header";
   triggerLabel?: string;
-  triggerClassName?: string;
-  contentClassName?: string;
+  width?: "auto" | "md";
 }
 
 function truncateMiddle(value: string, maxLength: number): string {
@@ -36,14 +36,13 @@ function truncateMiddle(value: string, maxLength: number): string {
 }
 
 export function SchemaSwitcher({
+  placement = "default",
   triggerLabel,
-  triggerClassName,
-  contentClassName,
+  width = "auto",
 }: SchemaSwitcherProps = {}): React.ReactElement {
   const { currentSchemaHash, runtime, switchSchema } = useInspector();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const anchorRef = useComboboxAnchor();
 
   const schemaHashes = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -62,11 +61,11 @@ export function SchemaSwitcher({
     shouldTruncateCurrentSchema === true
       ? truncateMiddle(currentSchemaHash, 24)
       : triggerText;
-  const resolvedTriggerClassName =
-    triggerClassName !== undefined
-      ? `justify-start gap-2 rounded-xs ${triggerClassName}`
-      : "justify-start gap-2 rounded-xs";
-
+  const triggerClassName = cn(
+    "justify-start gap-2 rounded-xs",
+    placement === "header" ? "h-7 px-1 text-secondary-foreground" : null,
+    width === "md" ? "max-w-[280px]" : null,
+  );
   return (
     <Combobox<string>
       items={schemaHashes}
@@ -79,23 +78,18 @@ export function SchemaSwitcher({
         }
       }}
     >
-      <div ref={anchorRef} className="inline-flex shrink-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={true}
-          className={resolvedTriggerClassName}
-          render={<ComboboxTrigger />}
-          title={triggerTitle}
-        >
-          <HashIcon className="size-3.5 text-current" />
-          <span className="block whitespace-nowrap font-mono">{displayTriggerText}</span>
-        </Button>
-      </div>
-      <ComboboxContent
-        anchor={anchorRef}
-        className={contentClassName ?? "w-max min-w-(--anchor-width) max-w-[calc(100vw-2rem)] p-0"}
+      <Button
+        variant="ghost"
+        size="sm"
+        nativeButton={true}
+        className={triggerClassName}
+        render={<ComboboxTrigger />}
+        title={triggerTitle}
       >
+        <HashIcon className="size-3.5 text-current" />
+        <span className="block whitespace-nowrap font-mono">{displayTriggerText}</span>
+      </Button>
+      <ComboboxContent className="w-max min-w-(--anchor-width) max-w-[calc(100vw-2rem)] p-0">
         <div className="sticky top-0 z-10 bg-popover p-1">
           <ComboboxInput
             value={query}
