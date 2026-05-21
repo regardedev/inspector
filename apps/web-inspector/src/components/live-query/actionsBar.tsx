@@ -6,10 +6,10 @@ import { Button } from "@regarde/ui/button";
 interface ActionsBarProps {
   error: string | null;
   generatedAt: number | null;
-  hasRows: boolean;
   isListPaneOpen: boolean;
   isRefreshing: boolean;
   onToggleListPane: () => void;
+  rowCount: number;
 }
 
 function formatLastRefresh(generatedAt: number | null): string {
@@ -23,10 +23,10 @@ function formatLastRefresh(generatedAt: number | null): string {
 export function ActionsBar({
   error,
   generatedAt,
-  hasRows,
   isListPaneOpen,
   isRefreshing,
   onToggleListPane,
+  rowCount,
 }: ActionsBarProps): React.ReactElement {
   const statusText = `${formatLastRefresh(generatedAt)}${isRefreshing === true ? " Refreshing..." : ""}`;
 
@@ -45,7 +45,7 @@ export function ActionsBar({
       </div>
       <div className="flex flex-col items-end gap-1 text-xs text-muted-foreground">
         <p>{statusText}</p>
-        {error !== null && hasRows === true ? (
+        {error !== null && rowCount > 0 ? (
           <Badge variant="destructive" size="sm">
             {error}
           </Badge>

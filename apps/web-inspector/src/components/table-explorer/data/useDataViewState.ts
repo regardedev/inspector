@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import type { Table } from "@tanstack/react-table";
 import type { ColumnDescriptor, DynamicTableRow } from "jazz-tools";
@@ -120,27 +120,6 @@ export function useDataViewState({
     };
   }, []);
   const activeRows = useAll<DynamicTableRow>(activeRowQueryBuilder ?? undefined, activeRowQueryOptions);
-
-  useEffect(() => {
-    if (searchState.editorMode === "insert") {
-      if (rowEditor.mode !== "insert") {
-        rowEditor.openInsert();
-      }
-      return;
-    }
-
-    if (activeRowId !== null) {
-      const hasActiveRowId = rowEditor.editedRowIds.includes(activeRowId);
-      if (hasActiveRowId === false) {
-        rowEditor.openEdit([activeRowId]);
-      }
-      return;
-    }
-
-    if (rowEditor.mode !== "closed") {
-      rowEditor.close();
-    }
-  }, [activeRowId, rowEditor.editedRowIds, rowEditor.mode, searchState.editorMode]);
 
   const handleSelectedRowIdsChange = (nextSelectedRowIds: TableRowId[]) => {
     if (nextSelectedRowIds.length === 0) {
@@ -267,7 +246,6 @@ export function useDataViewState({
       query.resetLoadedRows();
 
       if (options?.keepOpen === true) {
-        rowEditor.openInsert();
         return;
       }
 

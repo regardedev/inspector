@@ -8,7 +8,6 @@ import { useInspector } from "@/components/providers/inspectorProvider";
 import { appRoutes } from "@/lib/navigation/appRoutes";
 
 interface TableListPaneProps {
-  filteredTables: string[];
   searchValue: string;
   selectedTableName: string | null;
   tables: string[];
@@ -16,7 +15,6 @@ interface TableListPaneProps {
 }
 
 export function TableListPane({
-  filteredTables,
   searchValue,
   selectedTableName,
   tables,
@@ -24,6 +22,11 @@ export function TableListPane({
 }: TableListPaneProps): React.ReactElement {
   const { currentBranch, currentConnectionId, currentSchemaHash } = useInspector();
   const canBuildHref = currentConnectionId !== null && currentBranch !== null && currentSchemaHash !== null;
+  const normalizedSearchValue = searchValue.trim().toLowerCase();
+  const filteredTables =
+    normalizedSearchValue.length === 0
+      ? tables
+      : tables.filter((tableName) => tableName.toLowerCase().includes(normalizedSearchValue));
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">

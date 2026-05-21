@@ -46,6 +46,12 @@
 - Wrap low-level primitive parts into higher-level design-system components, but keep escape hatches available through composition rather than prop bloat.
 - For compound components, use the `Object.assign(Root, { Part })` export pattern when it improves call-site clarity.
 - Use direct DOM manipulation through refs for high-frequency interaction updates only when no other interface state depends on those values.
+- Treat `useEffect` as an escape hatch for synchronizing with systems outside React, not as the default way to make values update.
+- Do not use `useEffect` to derive state from props or other state. Compute derived values during render, and use `useMemo` only when the calculation is expensive.
+- Do not use `useEffect` to filter, sort, map, or otherwise transform render data into local state unless an external system requires synchronization.
+- Put user-action side effects directly in event handlers instead of setting state just to trigger an effect.
+- Reset component state for a different entity by changing the component `key` when remounting is the desired behavior, instead of clearing state in an effect after rendering stale state.
+- Use `useEffect` for subscriptions, browser APIs, DOM measurement/focus, third-party imperative integrations, and external stores; always return cleanup when registering listeners or subscriptions.
 
 ## TypeScript conventions
 

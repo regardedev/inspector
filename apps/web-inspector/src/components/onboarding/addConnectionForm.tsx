@@ -9,7 +9,6 @@ import type { AddConnectionFormValues } from "./connectionFormTypes";
 type FormSubmitHandler = NonNullable<React.ComponentProps<"form">["onSubmit"]>;
 
 interface AddConnectionFormProps {
-  canSubmit: boolean;
   errorMessage: string | null;
   formValues: AddConnectionFormValues;
   isSubmitting: boolean;
@@ -19,7 +18,6 @@ interface AddConnectionFormProps {
 }
 
 export function AddConnectionForm({
-  canSubmit,
   errorMessage,
   formValues,
   isSubmitting,
@@ -28,6 +26,10 @@ export function AddConnectionForm({
   onUpdateField,
 }: AddConnectionFormProps): React.ReactElement {
   const hasError = errorMessage !== null;
+  const canSubmit =
+    formValues.serverUrl.trim().length > 0 &&
+    formValues.appId.trim().length > 0 &&
+    formValues.adminSecret.trim().length > 0;
   const [touchedFields, setTouchedFields] = useState<Partial<Record<keyof AddConnectionFormValues, boolean>>>({});
   const isFieldInvalid = (field: keyof AddConnectionFormValues) =>
     touchedFields[field] === true && formValues[field].trim().length === 0;

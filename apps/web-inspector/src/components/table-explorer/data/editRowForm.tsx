@@ -25,18 +25,43 @@ export function EditRowForm({
   schemaColumns,
   targetRowId,
 }: EditRowFormProps): React.ReactElement {
+  if (rowValues === null) {
+    return <EmptyState title="Select a row" description="Select a row from the data grid to edit it." />;
+  }
+
+  return (
+    <LoadedEditRowForm
+      key={targetRowId ?? "unknown-row"}
+      onCancel={onCancel}
+      onDelete={onDelete}
+      onSave={onSave}
+      rowValues={rowValues}
+      schemaColumns={schemaColumns}
+      targetRowId={targetRowId}
+    />
+  );
+}
+
+interface LoadedEditRowFormProps extends Omit<EditRowFormProps, "rowValues"> {
+  rowValues: Record<string, unknown>;
+}
+
+function LoadedEditRowForm({
+  onCancel,
+  onDelete,
+  onSave,
+  rowValues,
+  schemaColumns,
+  targetRowId,
+}: LoadedEditRowFormProps): React.ReactElement {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
   const rowEditor = useRowEditorFields({
-    initialRowValues: rowValues ?? {},
+    initialRowValues: rowValues,
     mode: "edit",
     onSubmit: onSave,
     schemaColumns,
   });
-
-  if (rowValues === null) {
-    return <EmptyState title="Select a row" description="Select a row from the data grid to edit it." />;
-  }
 
   return (
     <form className="flex h-full min-h-0 flex-col mt-2 overflow-hidden" onSubmit={rowEditor.submit}>
@@ -47,7 +72,7 @@ export function EditRowForm({
           errors={rowEditor.errors}
           fieldStates={rowEditor.fieldStates}
           formFields={rowEditor.formFields}
-          initialRowValues={rowValues ?? {}}
+          initialRowValues={rowValues}
           mode="edit"
           onFieldNullChange={rowEditor.setFieldNull}
           onFieldTextChange={rowEditor.setFieldText}

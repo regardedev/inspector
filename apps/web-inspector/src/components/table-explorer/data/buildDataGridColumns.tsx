@@ -68,15 +68,13 @@ function SelectionCheckbox({
 
 function SortableColumnHeader({
   dataType,
-  isSortable,
   label,
   onToggleSort,
   sortDirection,
 }: {
   dataType: string | null;
-  isSortable: boolean;
   label: string;
-  onToggleSort: () => void;
+  onToggleSort?: () => void;
   sortDirection: TableSortDirection | null;
 }): React.ReactElement {
   const sortIcon = sortDirection === "asc"
@@ -85,7 +83,7 @@ function SortableColumnHeader({
       ? <ChevronDown className="size-3.25" />
       : <ChevronsUpDown className="size-3.25 opacity-60" />;
 
-  if (isSortable === false) {
+  if (onToggleSort === undefined) {
     return (
       <div className="inline-flex h-full items-center gap-1.5 text-xs/relaxed font-normal text-secondary-foreground/80">
         <span className="truncate">{label}</span>
@@ -172,21 +170,20 @@ export function buildDataGridColumns({
         return (
           <SortableColumnHeader
             dataType={dataType}
-            isSortable={column.isSortable}
             label={column.label}
             sortDirection={resolvedSortDirection}
-            onToggleSort={() => {
-              if (column.isSortable === false) {
-                return;
-              }
+            onToggleSort={
+              column.isSortable === true
+                ? () => {
+                    if (resolvedSortDirection === "asc") {
+                      tableColumn.toggleSorting(true);
+                      return;
+                    }
 
-              if (resolvedSortDirection === "asc") {
-                tableColumn.toggleSorting(true);
-                return;
-              }
-
-              tableColumn.toggleSorting(false);
-            }}
+                    tableColumn.toggleSorting(false);
+                  }
+                : undefined
+            }
           />
         );
       },

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { ColumnDescriptor, ColumnType } from "jazz-tools";
 import { X } from "lucide-react";
@@ -198,12 +198,36 @@ export function TableFilter({
         .filter((column) => column.operators.length > 0),
     ];
   }, [schemaColumns]);
+  const draftKey = useMemo(
+    () => JSON.stringify({ filters, columns: filterableColumns.map((column) => [column.name, column.operators]) }),
+    [filterableColumns, filters],
+  );
+
+  return (
+    <TableFilterDraft
+      key={draftKey}
+      filterableColumns={filterableColumns}
+      filters={filters}
+      onClear={onClear}
+      onFiltersChange={onFiltersChange}
+      onRequestClose={onRequestClose}
+    />
+  );
+}
+
+interface TableFilterDraftProps extends Omit<TableFilterProps, "schemaColumns"> {
+  filterableColumns: FilterableColumn[];
+}
+
+function TableFilterDraft({
+  filterableColumns,
+  filters,
+  onClear,
+  onFiltersChange,
+  onRequestClose,
+}: TableFilterDraftProps): React.ReactElement {
   const [rows, setRows] = useState<DraftFilterRow[]>(() => createDraftRowsFromFilters(filters, filterableColumns));
   const parsedRows = useMemo(() => parseDraftRows(rows, filterableColumns), [filterableColumns, rows]);
-
-  useEffect(() => {
-    setRows(createDraftRowsFromFilters(filters, filterableColumns));
-  }, [filterableColumns, filters]);
 
   const commitRows = (nextRows: DraftFilterRow[]) => {
     setRows(nextRows);

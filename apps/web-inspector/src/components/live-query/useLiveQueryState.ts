@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useLiveQueryTelemetry } from "@/hooks/useLiveQueryTelemetry";
 import type { LiveQueryRow, LiveQueryTableItem } from "@/types/liveQuery";
@@ -43,26 +43,24 @@ export function useLiveQueryState(): UseLiveQueryStateResult {
     return tableItems.filter((tableItem) => tableItem.tableName.toLowerCase().includes(normalizedSearchValue));
   }, [normalizedSearchValue, tableItems]);
 
-  useEffect(() => {
+  const effectiveSelectedTableName = useMemo(() => {
     if (selectedTableName === null) {
-      return;
+      return null;
     }
 
     const selectedTableExists = tableItems.some((tableItem) => tableItem.tableName === selectedTableName);
-    if (selectedTableExists === false) {
-      setSelectedTableName(null);
-    }
+    return selectedTableExists === true ? selectedTableName : null;
   }, [selectedTableName, tableItems]);
 
   const filteredRows = useMemo(() => {
     return telemetry.rows.filter((row) => {
-      if (selectedTableName !== null && row.table !== selectedTableName) {
+      if (effectiveSelectedTableName !== null && row.table !== effectiveSelectedTableName) {
         return false;
       }
 
       return true;
     });
-  }, [selectedTableName, telemetry.rows]);
+  }, [effectiveSelectedTableName, telemetry.rows]);
 
   return {
     rows: telemetry.rows,
@@ -73,7 +71,7 @@ export function useLiveQueryState(): UseLiveQueryStateResult {
     isInitialLoading: telemetry.isInitialLoading,
     isRefreshing: telemetry.isRefreshing,
     listSearchValue,
-    selectedTableName,
+    selectedTableName: effectiveSelectedTableName,
     setListSearchValue,
     setSelectedTableName,
   };

@@ -37,7 +37,6 @@ function AddConnectionPaneContent({ onClose }: AddConnectionPaneContentProps): R
     >
       {flow.step === "form" ? (
         <AddConnectionForm
-          canSubmit={flow.canSubmit}
           errorMessage={flow.errorMessage}
           formValues={flow.formValues}
           isSubmitting={flow.isSubmitting}

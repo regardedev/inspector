@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { useNavigate } from "@tanstack/react-router";
 import { fetchSchemaHashes } from "jazz-tools";
@@ -17,7 +17,6 @@ import {
 type FormSubmitHandler = NonNullable<React.ComponentProps<"form">["onSubmit"]>;
 
 export interface UseAddConnectionFlowResult {
-  canSubmit: boolean;
   errorMessage: string | null;
   formValues: AddConnectionFormValues;
   isSubmitting: boolean;
@@ -38,13 +37,10 @@ export function useAddConnectionFlow(): UseAddConnectionFlowResult {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const canSubmit = useMemo(() => {
-    return (
-      formValues.serverUrl.trim().length > 0 &&
-      formValues.appId.trim().length > 0 &&
-      formValues.adminSecret.trim().length > 0
-    );
-  }, [formValues.adminSecret, formValues.appId, formValues.serverUrl]);
+  const canSubmit =
+    formValues.serverUrl.trim().length > 0 &&
+    formValues.appId.trim().length > 0 &&
+    formValues.adminSecret.trim().length > 0;
 
   const updateField = (field: keyof AddConnectionFormValues, value: string) => {
     setFormValues((currentValues) => ({
@@ -138,7 +134,6 @@ export function useAddConnectionFlow(): UseAddConnectionFlowResult {
   };
 
   return {
-    canSubmit,
     errorMessage,
     fetchSchemas,
     formValues,

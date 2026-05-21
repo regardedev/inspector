@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useAll } from "jazz-tools/react";
 import { type DynamicTableRow } from "jazz-tools";
@@ -43,13 +43,26 @@ export interface UseTableQueryResult {
   rows: DynamicTableRow[];
 }
 
+interface RequestedRowCountState {
+  queryKey: string;
+  rowCount: number;
+}
+
 export function useTableQuery({
   chunkSize = DEFAULT_CHUNK_SIZE,
   tableName,
 }: UseTableQueryOptions): UseTableQueryResult {
-  const { runtime } = useInspector();
+  const { currentSchemaHash, runtime } = useInspector();
   const { filters, sortColumn, sortDirection } = useTableExplorerSearchParams();
-  const [requestedRowCount, setRequestedRowCount] = useState(chunkSize);
+  const queryKey = useMemo(
+    () => JSON.stringify({ chunkSize, currentSchemaHash, filters, sortColumn, sortDirection, tableName }),
+    [chunkSize, currentSchemaHash, filters, sortColumn, sortDirection, tableName],
+  );
+  const [requestedRowCountState, setRequestedRowCountState] = useState<RequestedRowCountState>(() => ({
+    queryKey,
+    rowCount: chunkSize,
+  }));
+  const requestedRowCount = requestedRowCountState.queryKey === queryKey ? requestedRowCountState.rowCount : chunkSize;
 
   const schemaColumns = useMemo(
     () => getTableColumns(runtime.wasmSchema, tableName),
@@ -115,10 +128,6 @@ export function useTableQuery({
   const hasMore = resolvedRows.length > requestedRowCount;
   const visibleRows = hasMore === true ? resolvedRows.slice(0, requestedRowCount) : resolvedRows;
 
-  useEffect(() => {
-    setRequestedRowCount(chunkSize);
-  }, [chunkSize, filters, runtime.wasmSchema, sortColumn, sortDirection, tableName]);
-
   return {
     columns,
     rows: visibleRows,
@@ -130,10 +139,13 @@ export function useTableQuery({
         return;
       }
 
-      setRequestedRowCount((currentRequestedRowCount) => currentRequestedRowCount + chunkSize);
+      setRequestedRowCountState((currentState) => ({
+        queryKey,
+        rowCount: (currentState.queryKey === queryKey ? currentState.rowCount : chunkSize) + chunkSize,
+      }));
     },
     resetLoadedRows: () => {
-      setRequestedRowCount(chunkSize);
+      setRequestedRowCountState({ queryKey, rowCount: chunkSize });
     },
   };
 }

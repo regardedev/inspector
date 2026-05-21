@@ -11,7 +11,7 @@ import { useInspectorTables } from "@/hooks/useInspectorTables";
 export function TableExplorerScreen(): React.ReactElement {
   const { currentTableName } = useInspector();
   const [tableSearch, setTableSearch] = useState("");
-  const { filteredTables, tables } = useInspectorTables(tableSearch);
+  const { tables } = useInspectorTables();
   const listPaneRef = useRef<PanelImperativeHandle>(null);
   const [isListPaneOpen, setIsListPaneOpen] = useState(true);
 
@@ -49,7 +49,6 @@ export function TableExplorerScreen(): React.ReactElement {
         onResize={handleListPaneResize}
       >
         <TableListPane
-          filteredTables={filteredTables}
           searchValue={tableSearch}
           selectedTableName={currentTableName}
           tables={tables}

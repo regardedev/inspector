@@ -129,10 +129,10 @@ export function LiveQueryGrid({ isListPaneOpen, onToggleListPane, state }: LiveQ
       <ActionsBar
         error={state.error}
         generatedAt={state.generatedAt}
-        hasRows={state.rows.length > 0}
         isListPaneOpen={isListPaneOpen}
         isRefreshing={state.isRefreshing}
         onToggleListPane={onToggleListPane}
+        rowCount={state.rows.length}
       />
       {state.error !== null && state.rows.length === 0 && state.isInitialLoading === false ? (
         <GridMessage title="Unable to load subscription telemetry" description={state.error} />
