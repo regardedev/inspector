@@ -29,17 +29,18 @@ A 2-weeks challenge to build an inspector with my UX and product vision.
    `pnpm build`
 
 4. Start the inspector:
-   `pnpm --filter regarde.inspector dev`
+   `cd apps/web-inspector`
+   `pnpm dev`
 
 5. Open in browser:
-   `http://regarde.inspector.localhost:1355`
+   `http://regarde.inspector.localhost:1355/conn`
 
 ## Option 2: add your Jazz app inside this workspace
 
-You can also clone your Jazz app into the `apps/` directory.
+You can also clone your Jazz app into the `apps/` directory. Or see `apps/my-jazz-app` example.
 
-1. Add the local dev tools package to your app:
-   `pnpm --filter your-app-name add @regarde/jazz-dev-tools@workspace:*`
+1. Add the local dev tools package to your app dependencies:
+   `"@regarde/jazz-dev-tools@workspace:*"`
 
 2. Update your app's Vite config:
 
@@ -47,6 +48,7 @@ You can also clone your Jazz app into the `apps/` directory.
    import { defineConfig } from "vite";
    import react from "@vitejs/plugin-react";
    import { jazzInspectorPlugin } from "@regarde/jazz-dev-tools";
+
    export default defineConfig({
      plugins: [react(), jazzInspectorPlugin()],
    });
@@ -57,11 +59,11 @@ You can also clone your Jazz app into the `apps/` directory.
 3. Build the workspace once:
    `pnpm build`
 
-4. Start the inspector in one terminal:
-   `pnpm --filter regarde.inspector dev`
+4. Start the inspector:
+   `cd apps/{your_app_name}`
+   `pnpm dev`
 
-5. Start your Jazz app in another terminal:
-   `pnpm --filter your-app-name dev`
+5. Start your Jazz app in another terminal.
 
 6. Open the inspector link printed in your app's dev server logs.
 
